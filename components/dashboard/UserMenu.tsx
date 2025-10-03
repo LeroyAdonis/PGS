@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { LogOut, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 
 interface UserMenuProps {
     user: {
@@ -11,6 +13,8 @@ interface UserMenuProps {
 
 export function UserMenu({ user }: UserMenuProps) {
     const [isOpen, setIsOpen] = useState(false)
+    const router = useRouter()
+    const supabase = createClient()
 
     const initials = user.displayName
         .split(' ')
@@ -19,10 +23,15 @@ export function UserMenu({ user }: UserMenuProps) {
         .toUpperCase()
         .slice(0, 2)
 
-    const handleLogout = () => {
-        // TODO: Implement logout logic
-        // For now, redirect to login
-        window.location.href = '/login'
+    const handleLogout = async () => {
+        try {
+            await supabase.auth.signOut()
+            router.push('/login')
+        } catch (error) {
+            console.error('Error signing out:', error)
+            // Still redirect to login even if there's an error
+            window.location.href = '/login'
+        }
     }
 
     return (

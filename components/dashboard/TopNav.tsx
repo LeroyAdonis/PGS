@@ -1,3 +1,5 @@
+'use client'
+
 import { Bell, Menu } from 'lucide-react'
 import { UserMenu } from './UserMenu'
 
