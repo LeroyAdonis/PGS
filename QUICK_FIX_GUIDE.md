@@ -1,6 +1,7 @@
 # Quick Fix Guide for Login & Onboarding Errors
 
 ## 🚨 Problem
+
 - Login returns `400 Bad Request`
 - Onboarding returns `401 Unauthorized`
 
@@ -11,6 +12,7 @@
 Go to: https://supabase.com/dashboard/project/umklzllghajepovjlkcc/settings/api
 
 Copy:
+
 - **anon public** key
 - **service_role** key (keep secret!)
 
@@ -21,6 +23,7 @@ cp .env.local.template .env.local
 ```
 
 Edit `.env.local` and paste your keys:
+
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://umklzllghajepovjlkcc.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<paste-anon-key-here>
@@ -44,6 +47,7 @@ npm run db:seed-users
 ```
 
 This creates:
+
 - `testuser@example.com` / `Test1234!`
 - `admin@purpleglowsocial.com` / `Admin1234!`
 
@@ -56,6 +60,7 @@ npm run dev
 ### 6. Test Login
 
 Open http://localhost:3000/login and login with:
+
 - Email: `testuser@example.com`
 - Password: `Test1234!`
 
@@ -64,6 +69,7 @@ Open http://localhost:3000/login and login with:
 ### 7. Test Onboarding
 
 Open http://localhost:3000/onboarding
+
 - Fill in business profile
 - Submit
 
@@ -72,6 +78,7 @@ Open http://localhost:3000/onboarding
 ## 📖 Full Documentation
 
 See `docs/AUTH_FIX_README.md` for:
+
 - Technical details
 - Troubleshooting
 - Architecture explanation

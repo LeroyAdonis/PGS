@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createRouteClient } from '@/lib/supabase/server'
 import { handleError } from '@/lib/errors/handler'
 import { logger } from '@/lib/logging/logger'
 import { z } from 'zod'
@@ -16,7 +15,7 @@ const topPostsQuerySchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const supabase = createRouteClient()
 
     // Get authenticated user
     const {

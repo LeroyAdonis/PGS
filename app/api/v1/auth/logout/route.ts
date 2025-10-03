@@ -7,8 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createRouteClient } from '@/lib/supabase/server'
 import { handleError } from '@/lib/errors/handler'
 import { logger } from '@/lib/logging/logger'
 
@@ -17,8 +16,8 @@ export const runtime = 'edge'
 export async function POST(request: NextRequest) {
   try {
     // Initialize Supabase client
-    const cookieStore = cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+
+    const supabase = createRouteClient()
 
     // Get current user
     const {

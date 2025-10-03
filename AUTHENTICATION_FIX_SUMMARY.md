@@ -3,6 +3,7 @@
 ## Problem Statement
 
 Users were experiencing authentication errors during onboarding:
+
 1. Error: "Authentication required" when creating business profile
 2. Users couldn't sign out from onboarding page to try again
 3. Unable to return to landing page - always redirected back to onboarding
@@ -18,54 +19,59 @@ Users were experiencing authentication errors during onboarding:
 ## Solutions Implemented
 
 ### 1. Fixed UserMenu Logout (components/dashboard/UserMenu.tsx)
+
 **Before:**
+
 ```typescript
 const handleLogout = () => {
-    // TODO: Implement logout logic
-    // For now, redirect to login
-    window.location.href = '/login'
+  // TODO: Implement logout logic
+  // For now, redirect to login
+  window.location.href = '/login'
 }
 ```
 
 **After:**
+
 ```typescript
 const handleLogout = async () => {
-    try {
-        await supabase.auth.signOut()
-        router.push('/login')
-    } catch (error) {
-        console.error('Error signing out:', error)
-        window.location.href = '/login'
-    }
+  try {
+    await supabase.auth.signOut()
+    router.push('/login')
+  } catch (error) {
+    console.error('Error signing out:', error)
+    window.location.href = '/login'
+  }
 }
 ```
 
 ### 2. Added Credentials to API Calls
 
 **OnboardingWizard.tsx:**
+
 ```typescript
 const response = await fetch('/api/v1/business-profiles', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    credentials: 'include',  // ← Added this
-    body: JSON.stringify(data),
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  credentials: 'include', // ← Added this
+  body: JSON.stringify(data),
 })
 ```
 
 **Step2SocialConnect.tsx:**
+
 ```typescript
 const response = await fetch(`/api/v1/social-accounts/connect/${platform}`, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    credentials: 'include',  // ← Added this
-    body: JSON.stringify({
-        businessProfileId,
-        redirectUri: `${window.location.origin}/onboarding`,
-    }),
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  credentials: 'include', // ← Added this
+  body: JSON.stringify({
+    businessProfileId,
+    redirectUri: `${window.location.origin}/onboarding`,
+  }),
 })
 ```
 
@@ -103,6 +109,7 @@ Added `'use client'` directive to TopNav.tsx to support client-side routing and 
 ## Testing
 
 All OnboardingWizard tests pass (5/5):
+
 - ✅ Renders the first step initially
 - ✅ Renders sign out button
 - ✅ Handles sign out when button is clicked
@@ -112,6 +119,7 @@ All OnboardingWizard tests pass (5/5):
 ## How to Verify the Fix
 
 ### 1. Test Logout Functionality
+
 1. Log in to the application
 2. Navigate to the dashboard
 3. Click on your user menu in the top right
@@ -120,6 +128,7 @@ All OnboardingWizard tests pass (5/5):
 6. **Expected**: If you try to access `/dashboard` again, you should be redirected to login
 
 ### 2. Test Onboarding Authentication
+
 1. Register a new user or log in with existing credentials
 2. If redirected to `/onboarding`, fill out the business profile form
 3. Click "Continue to Social Media Setup"
@@ -128,6 +137,7 @@ All OnboardingWizard tests pass (5/5):
 6. **Expected**: You should proceed to Step 2 (Social Media Connect)
 
 ### 3. Test Sign-Out from Onboarding
+
 1. Log in and navigate to `/onboarding`
 2. Look for the "Sign Out" button at the top right of the page
 3. Click "Sign Out"
@@ -136,6 +146,7 @@ All OnboardingWizard tests pass (5/5):
 6. **Expected**: You can now log in with different credentials
 
 ### 4. Test API Authentication
+
 1. Open browser DevTools (F12) → Network tab
 2. Log in and navigate to onboarding
 3. Fill out the business profile form and submit
@@ -156,6 +167,7 @@ By default, `fetch()` does not include credentials (cookies) in cross-origin req
 ### Why the Previous Fix Wasn't Complete
 
 The previous fix (documented in `FIX_AUTHENTICATION_ISSUE.md`) addressed the API route using the correct Supabase client initialization, but didn't address:
+
 1. The client-side fetch calls missing credentials
 2. The logout functionality not clearing sessions
 3. Users being stuck in onboarding without a way to sign out
@@ -163,6 +175,7 @@ The previous fix (documented in `FIX_AUTHENTICATION_ISSUE.md`) addressed the API
 ## Next Steps
 
 After merging this PR:
+
 1. Deploy to staging environment
 2. Test with real Supabase instance
 3. Verify no regression in existing authentication flows

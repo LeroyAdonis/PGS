@@ -7,8 +7,8 @@ import type { Database } from './types'
  * This client uses cookies for session management
  * Use this in Server Components, Server Actions, and API Routes
  */
-export async function createClient() {
-  const cookieStore = await cookies()
+export function createClient() {
+  const cookieStore = cookies()
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
@@ -46,6 +46,6 @@ export async function createClient() {
  * This is a convenience wrapper around createClient for use in API route handlers
  * Handles cookie management for authentication
  */
-export async function createRouteClient() {
+export function createRouteClient() {
   return createClient()
 }
