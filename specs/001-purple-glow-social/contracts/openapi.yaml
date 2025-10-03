@@ -1,0 +1,1724 @@
+openapi: 3.1.0
+info:
+  title: Purple Glow Social API
+  version: 1.0.0
+  description: |
+    RESTful API for Purple Glow Social - AI-powered social media management platform.
+
+    **Authentication**: All endpoints (except /auth/*) require Bearer token in Authorization header.
+
+    **Rate Limiting**: 
+    - Authenticated: 100 req/min per user
+    - Unauthenticated: 10 req/min per IP
+
+    **Error Responses**: All endpoints return RFC 7807 Problem Details for HTTP APIs format.
+  contact:
+    name: Purple Glow Social Support
+    email: support@purpleglowsocial.com
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://api.purpleglowsocial.com/v1
+    description: Production server
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+
+tags:
+  - name: Authentication
+    description: User authentication and registration
+  - name: Business Profiles
+    description: Business profile management
+  - name: Social Accounts
+    description: Social media account connections
+  - name: Posts
+    description: Content generation and management
+  - name: Publishing
+    description: Post scheduling and publishing
+  - name: Analytics
+    description: Engagement metrics and reporting
+  - name: Subscriptions
+    description: Subscription and billing management
+  - name: Chat
+    description: Conversational interface
+  - name: Admin
+    description: Administrative operations
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from Supabase Auth
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - type
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          format: uri
+          example: 'https://api.purpleglowsocial.com/errors/validation-error'
+        title:
+          type: string
+          example: 'Validation Error'
+        status:
+          type: integer
+          example: 400
+        detail:
+          type: string
+          example: 'The request body contains invalid data.'
+        instance:
+          type: string
+          format: uri
+          example: '/api/v1/posts'
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        display_name:
+          type: string
+        role:
+          type: string
+          enum: [user, business_admin, team_member]
+        account_status:
+          type: string
+          enum: [active, suspended, deleted]
+        email_verified:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        last_login_at:
+          type: string
+          format: date-time
+          nullable: true
+        notification_preferences:
+          type: object
+          properties:
+            email_enabled:
+              type: boolean
+            in_app_enabled:
+              type: boolean
+            events:
+              type: array
+              items:
+                type: string
+
+    BusinessProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        owner_user_id:
+          type: string
+          format: uuid
+        business_name:
+          type: string
+        industry:
+          type: string
+        target_audience:
+          type: string
+        brand_logo_url:
+          type: string
+          format: uri
+          nullable: true
+        primary_color:
+          type: string
+          pattern: '^#[0-9A-F]{6}$'
+          nullable: true
+        secondary_color:
+          type: string
+          pattern: '^#[0-9A-F]{6}$'
+          nullable: true
+        content_tone:
+          type: string
+          enum: [professional, casual, friendly, formal, humorous]
+        content_topics:
+          type: array
+          items:
+            type: string
+        preferred_language:
+          type: string
+          enum: [en, af, zu, xh, nso, st, ss, ts, tn, ve, nr]
+        posting_frequency:
+          type: string
+          enum: [daily, 3x_week, weekly, custom]
+        automation_enabled:
+          type: boolean
+        automation_eligible_at:
+          type: string
+          format: date-time
+          nullable: true
+        approved_posts_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    SocialMediaAccount:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        business_profile_id:
+          type: string
+          format: uuid
+        platform:
+          type: string
+          enum: [facebook, instagram, twitter, linkedin]
+        platform_user_id:
+          type: string
+        platform_username:
+          type: string
+        connection_status:
+          type: string
+          enum: [connected, expired, revoked, error]
+        last_sync_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        business_profile_id:
+          type: string
+          format: uuid
+        caption:
+          type: string
+        language:
+          type: string
+        image_url:
+          type: string
+          format: uri
+          nullable: true
+        image_prompt:
+          type: string
+          nullable: true
+        hashtags:
+          type: array
+          items:
+            type: string
+        platform_targets:
+          type: array
+          items:
+            type: string
+            enum: [facebook, instagram, twitter, linkedin]
+        status:
+          type: string
+          enum: [pending, approved, scheduled, publishing, published, failed, rejected]
+        scheduled_time:
+          type: string
+          format: date-time
+          nullable: true
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        user_edits:
+          type: array
+          items:
+            type: object
+        ai_model_version:
+          type: string
+          nullable: true
+
+    PostPublication:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        post_id:
+          type: string
+          format: uuid
+        social_media_account_id:
+          type: string
+          format: uuid
+        platform_post_id:
+          type: string
+          nullable: true
+        publish_status:
+          type: string
+          enum: [pending, publishing, published, failed]
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+        retry_count:
+          type: integer
+
+    AnalyticsRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        post_publication_id:
+          type: string
+          format: uuid
+        collected_at:
+          type: string
+          format: date-time
+        likes:
+          type: integer
+        comments:
+          type: integer
+        shares:
+          type: integer
+        reach:
+          type: integer
+          nullable: true
+        impressions:
+          type: integer
+          nullable: true
+        clicks:
+          type: integer
+          nullable: true
+        engagement_rate:
+          type: number
+          format: float
+          nullable: true
+        platform_metrics:
+          type: object
+
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        tier:
+          type: string
+          enum: [starter, growth, enterprise]
+        status:
+          type: string
+          enum: [trial, active, past_due, cancelled, expired]
+        billing_cycle_start:
+          type: string
+          format: date
+        next_billing_date:
+          type: string
+          format: date
+        trial_end_date:
+          type: string
+          format: date
+          nullable: true
+        posts_used_current_cycle:
+          type: integer
+        posts_limit:
+          type: integer
+        platforms_connected:
+          type: integer
+        platforms_limit:
+          type: integer
+        team_members_count:
+          type: integer
+        team_members_limit:
+          type: integer
+        storage_used_mb:
+          type: number
+          format: float
+        storage_limit_mb:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ChatMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        sender:
+          type: string
+          enum: [user, system]
+        message_text:
+          type: string
+        interpreted_command:
+          type: string
+          nullable: true
+        command_parameters:
+          type: object
+          nullable: true
+        resulting_action:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+  responses:
+    UnauthorizedError:
+      description: Authentication token is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            type: 'https://api.purpleglowsocial.com/errors/unauthorized'
+            title: 'Unauthorized'
+            status: 401
+            detail: 'Invalid or expired authentication token.'
+
+    ForbiddenError:
+      description: User does not have permission to access this resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            type: 'https://api.purpleglowsocial.com/errors/forbidden'
+            title: 'Forbidden'
+            status: 403
+            detail: 'You do not have permission to access this resource.'
+
+    NotFoundError:
+      description: The requested resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            type: 'https://api.purpleglowsocial.com/errors/not-found'
+            title: 'Not Found'
+            status: 404
+            detail: 'The requested resource does not exist.'
+
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            type: 'https://api.purpleglowsocial.com/errors/validation-error'
+            title: 'Validation Error'
+            status: 400
+            detail: 'The request body contains invalid data.'
+            errors:
+              - field: 'business_name'
+                message: 'Business name must be at least 2 characters.'
+
+    RateLimitError:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            type: 'https://api.purpleglowsocial.com/errors/rate-limit'
+            title: 'Rate Limit Exceeded'
+            status: 429
+            detail: 'You have exceeded the rate limit. Try again in 60 seconds.'
+
+security:
+  - BearerAuth: []
+
+paths:
+  # ========================================
+  # Authentication Endpoints
+  # ========================================
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register new user
+      description: Create a new user account and send verification email
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - display_name
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                display_name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  session:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                      refresh_token:
+                        type: string
+                      expires_at:
+                        type: integer
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate with email and password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  session:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                      refresh_token:
+                        type: string
+                      expires_at:
+                        type: integer
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User logout
+      description: Invalidate current session
+      responses:
+        '204':
+          description: Logout successful
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: Get new access token using refresh token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  expires_at:
+                    type: integer
+        '401':
+          description: Invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ========================================
+  # Business Profile Endpoints
+  # ========================================
+  /business-profiles:
+    post:
+      tags:
+        - Business Profiles
+      summary: Create business profile
+      description: Create new business profile (onboarding step)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - business_name
+                - industry
+                - target_audience
+                - content_tone
+                - content_topics
+                - preferred_language
+              properties:
+                business_name:
+                  type: string
+                  minLength: 2
+                  maxLength: 200
+                industry:
+                  type: string
+                target_audience:
+                  type: string
+                  minLength: 10
+                brand_logo_url:
+                  type: string
+                  format: uri
+                primary_color:
+                  type: string
+                  pattern: '^#[0-9A-F]{6}$'
+                secondary_color:
+                  type: string
+                  pattern: '^#[0-9A-F]{6}$'
+                content_tone:
+                  type: string
+                  enum: [professional, casual, friendly, formal, humorous]
+                content_topics:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 1
+                preferred_language:
+                  type: string
+                  enum: [en, af, zu, xh, nso, st, ss, ts, tn, ve, nr]
+                posting_frequency:
+                  type: string
+                  enum: [daily, 3x_week, weekly, custom]
+      responses:
+        '201':
+          description: Business profile created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessProfile'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /business-profiles/me:
+    get:
+      tags:
+        - Business Profiles
+      summary: Get current user's business profile
+      responses:
+        '200':
+          description: Business profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessProfile'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags:
+        - Business Profiles
+      summary: Update business profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                business_name:
+                  type: string
+                industry:
+                  type: string
+                target_audience:
+                  type: string
+                brand_logo_url:
+                  type: string
+                  format: uri
+                primary_color:
+                  type: string
+                secondary_color:
+                  type: string
+                content_tone:
+                  type: string
+                content_topics:
+                  type: array
+                  items:
+                    type: string
+                preferred_language:
+                  type: string
+                posting_frequency:
+                  type: string
+      responses:
+        '200':
+          description: Business profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessProfile'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /business-profiles/me/automation:
+    put:
+      tags:
+        - Business Profiles
+      summary: Toggle automation mode
+      description: Enable/disable auto-posting (requires eligibility)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - enabled
+              properties:
+                enabled:
+                  type: boolean
+      responses:
+        '200':
+          description: Automation mode updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessProfile'
+        '403':
+          description: Not eligible for automation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                type: 'https://api.purpleglowsocial.com/errors/automation-not-eligible'
+                title: 'Automation Not Eligible'
+                status: 403
+                detail: 'You must have 10 approved posts and 14 days of account age to enable automation.'
+
+  # ========================================
+  # Social Media Account Endpoints
+  # ========================================
+  /social-accounts:
+    get:
+      tags:
+        - Social Accounts
+      summary: List connected social accounts
+      responses:
+        '200':
+          description: Social accounts retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accounts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SocialMediaAccount'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /social-accounts/{platform}/connect:
+    post:
+      tags:
+        - Social Accounts
+      summary: Connect social media account
+      description: Initiate OAuth flow for platform connection
+      parameters:
+        - name: platform
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [facebook, instagram, twitter, linkedin]
+      responses:
+        '200':
+          description: OAuth URL generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  oauth_url:
+                    type: string
+                    format: uri
+                  state:
+                    type: string
+        '400':
+          description: Platform limit reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /social-accounts/{platform}/callback:
+    get:
+      tags:
+        - Social Accounts
+      summary: OAuth callback handler
+      description: Complete OAuth flow and store tokens
+      parameters:
+        - name: platform
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [facebook, instagram, twitter, linkedin]
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirect to dashboard with success/error
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /social-accounts/{id}:
+    delete:
+      tags:
+        - Social Accounts
+      summary: Disconnect social account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Account disconnected
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # ========================================
+  # Post Endpoints
+  # ========================================
+  /posts:
+    get:
+      tags:
+        - Posts
+      summary: List posts
+      description: Get posts for current business profile with filtering
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, scheduled, published, failed, rejected]
+        - name: from_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: platform
+          in: query
+          schema:
+            type: string
+            enum: [facebook, instagram, twitter, linkedin]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Posts retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      total_pages:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - Posts
+      summary: Generate new post
+      description: Use AI to generate post caption and image
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - platform_targets
+              properties:
+                topic:
+                  type: string
+                  description: Optional topic override (uses profile topics if not provided)
+                platform_targets:
+                  type: array
+                  items:
+                    type: string
+                    enum: [facebook, instagram, twitter, linkedin]
+                  minItems: 1
+                generate_image:
+                  type: boolean
+                  default: true
+                image_prompt:
+                  type: string
+                  description: Optional image generation prompt override
+      responses:
+        '201':
+          description: Post generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Validation error or post limit reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+
+  /posts/{id}:
+    get:
+      tags:
+        - Posts
+      summary: Get post by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Post retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags:
+        - Posts
+      summary: Update post
+      description: Edit caption, image, hashtags, or platforms (tracks edits in user_edits)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                caption:
+                  type: string
+                hashtags:
+                  type: array
+                  items:
+                    type: string
+                platform_targets:
+                  type: array
+                  items:
+                    type: string
+                    enum: [facebook, instagram, twitter, linkedin]
+      responses:
+        '200':
+          description: Post updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    delete:
+      tags:
+        - Posts
+      summary: Delete post
+      description: Soft delete post (sets status to 'rejected')
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Post deleted
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /posts/{id}/regenerate-image:
+    post:
+      tags:
+        - Posts
+      summary: Regenerate post image
+      description: Generate new image using existing or new prompt
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                image_prompt:
+                  type: string
+                  description: New prompt (uses existing if not provided)
+      responses:
+        '200':
+          description: Image regenerated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /posts/{id}/approve:
+    post:
+      tags:
+        - Posts
+      summary: Approve post
+      description: Change status from 'pending' to 'approved'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Post approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /posts/{id}/reject:
+    post:
+      tags:
+        - Posts
+      summary: Reject post
+      description: Change status from 'pending' to 'rejected'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Post rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # ========================================
+  # Publishing Endpoints
+  # ========================================
+  /posts/{id}/schedule:
+    post:
+      tags:
+        - Publishing
+      summary: Schedule post for publishing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scheduled_time
+              properties:
+                scheduled_time:
+                  type: string
+                  format: date-time
+                  description: Must be at least 5 minutes in the future
+      responses:
+        '200':
+          description: Post scheduled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Invalid schedule time or post not approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /posts/{id}/publish:
+    post:
+      tags:
+        - Publishing
+      summary: Publish post immediately
+      description: Publish to all platform_targets
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Post published
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post:
+                    $ref: '#/components/schemas/Post'
+                  publications:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PostPublication'
+        '400':
+          description: Post not approved or no connected platforms
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /posts/{id}/publications:
+    get:
+      tags:
+        - Publishing
+      summary: Get post publication status
+      description: Get per-platform publication details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Publications retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostPublication'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # ========================================
+  # Analytics Endpoints
+  # ========================================
+  /analytics/posts/{id}:
+    get:
+      tags:
+        - Analytics
+      summary: Get post analytics
+      description: Get engagement metrics for specific post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Analytics retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post_id:
+                    type: string
+                    format: uuid
+                  publications:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        platform:
+                          type: string
+                        analytics:
+                          $ref: '#/components/schemas/AnalyticsRecord'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /analytics/summary:
+    get:
+      tags:
+        - Analytics
+      summary: Get analytics summary
+      description: Get aggregated metrics for business profile
+      parameters:
+        - name: from_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: platform
+          in: query
+          schema:
+            type: string
+            enum: [facebook, instagram, twitter, linkedin]
+      responses:
+        '200':
+          description: Summary retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_posts:
+                    type: integer
+                  published_posts:
+                    type: integer
+                  total_likes:
+                    type: integer
+                  total_comments:
+                    type: integer
+                  total_shares:
+                    type: integer
+                  avg_engagement_rate:
+                    type: number
+                  by_platform:
+                    type: object
+                    additionalProperties:
+                      type: object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /analytics/top-posts:
+    get:
+      tags:
+        - Analytics
+      summary: Get top performing posts
+      description: Get posts sorted by engagement metrics
+      parameters:
+        - name: metric
+          in: query
+          schema:
+            type: string
+            enum: [likes, comments, shares, engagement_rate]
+            default: engagement_rate
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+        - name: from_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Top posts retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    post:
+                      $ref: '#/components/schemas/Post'
+                    analytics:
+                      $ref: '#/components/schemas/AnalyticsRecord'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  # ========================================
+  # Subscription Endpoints
+  # ========================================
+  /subscriptions/me:
+    get:
+      tags:
+        - Subscriptions
+      summary: Get current subscription
+      responses:
+        '200':
+          description: Subscription retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /subscriptions/upgrade:
+    post:
+      tags:
+        - Subscriptions
+      summary: Upgrade subscription tier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tier
+              properties:
+                tier:
+                  type: string
+                  enum: [growth, enterprise]
+      responses:
+        '200':
+          description: Upgrade initiated (Paystack payment URL returned)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payment_url:
+                    type: string
+                    format: uri
+                  reference:
+                    type: string
+        '400':
+          description: Invalid tier or downgrade not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /subscriptions/cancel:
+    post:
+      tags:
+        - Subscriptions
+      summary: Cancel subscription
+      description: Cancel recurring billing (access remains until end of cycle)
+      responses:
+        '200':
+          description: Subscription cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /subscriptions/billing-history:
+    get:
+      tags:
+        - Subscriptions
+      summary: Get billing transaction history
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Billing history retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        amount:
+                          type: number
+                        currency:
+                          type: string
+                        transaction_type:
+                          type: string
+                        status:
+                          type: string
+                        transaction_date:
+                          type: string
+                          format: date-time
+                        receipt_url:
+                          type: string
+                          format: uri
+                  pagination:
+                    type: object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  # ========================================
+  # Chat Endpoints
+  # ========================================
+  /chat/messages:
+    get:
+      tags:
+        - Chat
+      summary: Get chat message history
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        '200':
+          description: Messages retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatMessage'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - Chat
+      summary: Send chat message
+      description: Send user message and get system response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message_text
+              properties:
+                message_text:
+                  type: string
+      responses:
+        '201':
+          description: Message sent and response generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_message:
+                    $ref: '#/components/schemas/ChatMessage'
+                  system_response:
+                    $ref: '#/components/schemas/ChatMessage'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  # ========================================
+  # Admin Endpoints
+  # ========================================
+  /admin/users:
+    get:
+      tags:
+        - Admin
+      summary: List all users
+      description: Admin-only endpoint to view users
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, suspended, deleted]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        '200':
+          description: Users retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  pagination:
+                    type: object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /admin/users/{id}/suspend:
+    post:
+      tags:
+        - Admin
+      summary: Suspend user account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User suspended
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /admin/metrics:
+    get:
+      tags:
+        - Admin
+      summary: Get platform metrics
+      description: System-wide analytics (total users, posts, revenue)
+      responses:
+        '200':
+          description: Metrics retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_users:
+                    type: integer
+                  active_subscriptions:
+                    type: integer
+                  total_posts:
+                    type: integer
+                  published_posts:
+                    type: integer
+                  monthly_revenue:
+                    type: number
+                  avg_posts_per_user:
+                    type: number
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'

@@ -1,0 +1,11 @@
+Test user: testuser@example.com (Password: Test1234!)
+Admin user: admin@purpleglowsocial.com (Password: Admin1234!)
+
+Sample data:
+Business profile: "Joe's Plumbing" (Starter tier, automation eligible)
+2 social accounts: Facebook + Instagram (connected with mock tokens)
+3 sample posts: published (with analytics), approved/scheduled, pending
+2 post publications + 2 analytics records
+1 subscription (Starter tier, R499/mo, 18/30 posts used)
+1 billing transaction (successful charge)
+2 chat messages (user + system)
