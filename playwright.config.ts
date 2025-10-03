@@ -7,6 +7,9 @@ import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
   testDir: './tests/e2e',
   
+  /* Ignore performance tests by default (they take a long time) */
+  testIgnore: process.env.RUN_PERFORMANCE_TESTS ? [] : ['**/performance/**'],
+  
   /* Run tests in files in parallel */
   fullyParallel: true,
   

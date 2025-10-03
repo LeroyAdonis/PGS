@@ -134,7 +134,7 @@ test.describe('Onboarding', () => {
     await expect(businessNameInput).toHaveValue('Navigation Test')
   })
 
-  test('should redirect authenticated users without profile to onboarding', async ({ page, context }) => {
+  test('should redirect authenticated users without profile to onboarding', async ({ page }) => {
     // Already on onboarding from beforeEach
     
     // Try to navigate to dashboard directly

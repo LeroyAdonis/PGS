@@ -177,7 +177,7 @@ test.describe('Post Publishing', () => {
     await expect(page.locator('text=/\\d+.*post/i')).toBeVisible({ timeout: 5000 })
   })
 
-  test('should require social account connection before publishing', async ({ page, context }) => {
+  test('should require social account connection before publishing', async ({ page }) => {
     // Create a new user without social accounts
     const newEmail = `noaccount${Date.now()}@example.com`
     

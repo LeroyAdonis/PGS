@@ -15,7 +15,11 @@
     "db:seed-users": "node scripts/seed-users.js",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:performance": "playwright test tests/performance",
     "test:all": "npm run type-check && npm run lint && npm run test && npm run test:e2e"
   },
   "dependencies": {

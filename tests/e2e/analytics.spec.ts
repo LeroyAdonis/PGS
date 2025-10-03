@@ -136,7 +136,7 @@ test.describe('Analytics', () => {
     ).toBeVisible({ timeout: 5000 })
   })
 
-  test('should show no data message for new accounts', async ({ page, context }) => {
+  test('should show no data message for new accounts', async ({ page }) => {
     // Create a new user
     const newEmail = `newanalytics${Date.now()}@example.com`
     
