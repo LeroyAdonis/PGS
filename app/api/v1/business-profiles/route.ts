@@ -7,7 +7,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteClient } from '@/lib/supabase/server'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 import { createBusinessProfileSchema } from '@/lib/validation/business-profile'
 import { handleError } from '@/lib/errors/handler'
 import { logger } from '@/lib/logging/logger'
@@ -21,7 +22,8 @@ export async function POST(request: NextRequest) {
     const validatedData = createBusinessProfileSchema.parse(body)
 
     // Initialize Supabase client
-    const supabase = await createRouteClient()
+    const cookieStore = cookies()
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
     // Get current user
     const {
