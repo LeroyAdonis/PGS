@@ -6,6 +6,9 @@ import { Step1BusinessProfile } from './Step1BusinessProfile'
 import { Step2SocialConnect } from './Step2SocialConnect'
 import { type CreateBusinessProfileInput } from '@/lib/validation/business-profile'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { LogOut } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 const STEPS = [
     { id: 1, title: 'Business Profile', description: 'Tell us about your business' },
@@ -23,6 +26,17 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     const [isCreatingProfile, setIsCreatingProfile] = useState(false)
     const [profileCreationError, setProfileCreationError] = useState<string | null>(null)
     const router = useRouter()
+    const supabase = createClient()
+
+    const handleLogout = async () => {
+        try {
+            await supabase.auth.signOut()
+            router.push('/login')
+        } catch (error) {
+            console.error('Error signing out:', error)
+            window.location.href = '/login'
+        }
+    }
 
     const handleStep1Next = async (data: CreateBusinessProfileInput) => {
         setIsCreatingProfile(true)
@@ -34,6 +48,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify(data),
             })
 
@@ -74,6 +89,20 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         <div className="min-h-screen bg-background">
             <div className="container mx-auto px-4 py-8">
                 <div className="max-w-2xl mx-auto">
+                    {/* Header with logout button */}
+                    <div className="flex justify-between items-center mb-6">
+                        <h1 className="text-2xl font-bold text-gray-900">Complete Your Profile</h1>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleLogout}
+                            className="flex items-center gap-2"
+                        >
+                            <LogOut className="h-4 w-4" />
+                            Sign Out
+                        </Button>
+                    </div>
+
                     <div className="mb-8">
                         <ProgressBar currentStep={currentStep} totalSteps={STEPS.length} />
                     </div>

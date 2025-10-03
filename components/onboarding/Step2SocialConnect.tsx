@@ -72,6 +72,7 @@ export function Step2SocialConnect({ onNext, onBack, businessProfileId }: Step2S
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     businessProfileId,
                     redirectUri: `${window.location.origin}/onboarding`,
