@@ -3,11 +3,7 @@ import { cookies } from 'next/headers'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import Link from 'next/link'
 
-export default async function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = cookies()
   const supabase = createServerComponentClient({ cookies: () => cookieStore })
 
@@ -20,11 +16,7 @@ export default async function AdminLayout({
   }
 
   // Check if user is admin
-  const { data: userData } = await supabase
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
+  const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single()
 
   if (!userData || userData.role !== 'admin') {
     redirect('/dashboard')

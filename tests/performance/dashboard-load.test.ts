@@ -129,14 +129,17 @@ test.describe('Dashboard Load Performance', () => {
 
     // Get performance metrics
     const metrics = await page.evaluate(() => {
-      const perfData = window.performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+      const perfData = window.performance.getEntriesByType(
+        'navigation'
+      )[0] as PerformanceNavigationTiming
       const paintEntries = window.performance.getEntriesByType('paint')
-      
+
       return {
         domContentLoaded: perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
         loadComplete: perfData.loadEventEnd - perfData.loadEventStart,
-        firstPaint: paintEntries.find(e => e.name === 'first-paint')?.startTime || 0,
-        firstContentfulPaint: paintEntries.find(e => e.name === 'first-contentful-paint')?.startTime || 0,
+        firstPaint: paintEntries.find((e) => e.name === 'first-paint')?.startTime || 0,
+        firstContentfulPaint:
+          paintEntries.find((e) => e.name === 'first-contentful-paint')?.startTime || 0,
       }
     })
 

@@ -9,6 +9,7 @@ All code changes have been implemented. Follow these steps to apply the fix to y
 ## Step-by-Step Implementation
 
 ### Prerequisites
+
 - [ ] You have access to Supabase dashboard
 - [ ] You have the Supabase CLI installed (`supabase --version`)
 - [ ] You have Node.js 20+ installed (`node -v`)
@@ -55,6 +56,7 @@ supabase db push
 ```
 
 **Expected output:**
+
 ```
 Do you want to push these migrations to the remote database?
  • 017_sync_auth_users_trigger.sql
@@ -77,6 +79,7 @@ npm run db:seed-users
 ```
 
 **Expected output:**
+
 ```
 🌱 Seeding test users...
 
@@ -109,6 +112,7 @@ npm run dev
 ```
 
 **Expected output:**
+
 ```
 ▲ Next.js 14.2.0
 - Local:        http://localhost:3000
@@ -132,6 +136,7 @@ npm run dev
 **✅ Success:** You should be redirected to http://localhost:3000/dashboard
 
 **❌ If it fails:**
+
 - Check browser console for errors
 - Verify `.env.local` has correct keys
 - Check Supabase dashboard logs: https://supabase.com/dashboard/project/umklzllghajepovjlkcc/logs/explorer
@@ -159,6 +164,7 @@ npm run dev
 **✅ Success:** Form submits and you proceed to Step 2 (Social Media)
 
 **❌ If you get 401 Unauthorized:**
+
 - Check that you're logged in (look for session cookies in DevTools)
 - Check `.env.local` has correct keys
 - Re-run the seed script: `npm run db:seed-users`
@@ -186,6 +192,7 @@ After completing all steps, verify:
 **Cause:** `.env.local` file doesn't exist or has incorrect format
 
 **Solution:**
+
 ```bash
 cp .env.local.template .env.local
 # Edit and add your actual keys
@@ -206,6 +213,7 @@ cp .env.local.template .env.local
 **Cause:** Session might not be properly established
 
 **Solutions to try:**
+
 1. Clear browser cookies and cache
 2. Check Application > Cookies in DevTools for `sb-` prefixed cookies
 3. Re-login with test user
@@ -226,6 +234,7 @@ cp .env.local.template .env.local
 **Cause:** Network issue or wrong URL
 
 **Solution:**
+
 - Verify URL: `https://umklzllghajepovjlkcc.supabase.co`
 - Check Supabase project is active in dashboard
 - Try: `curl https://umklzllghajepovjlkcc.supabase.co/rest/v1/`

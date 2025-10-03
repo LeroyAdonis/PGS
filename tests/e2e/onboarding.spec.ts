@@ -14,7 +14,7 @@ test.describe('Onboarding', () => {
     await page.fill('input[name="password"]', 'SecurePass123!')
     await page.fill('input[name="display_name"]', 'Onboarding Test User')
     await page.click('button[type="submit"]')
-    
+
     // Should be redirected to onboarding
     await expect(page).toHaveURL('/onboarding', { timeout: 10000 })
   })
@@ -136,7 +136,7 @@ test.describe('Onboarding', () => {
 
   test('should redirect authenticated users without profile to onboarding', async ({ page }) => {
     // Already on onboarding from beforeEach
-    
+
     // Try to navigate to dashboard directly
     await page.goto('/dashboard')
 

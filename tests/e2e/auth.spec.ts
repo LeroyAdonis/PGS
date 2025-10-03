@@ -122,7 +122,9 @@ test.describe('Authentication', () => {
 
       // Verify session cookie exists
       const cookies = await context.cookies()
-      const sessionCookie = cookies.find((c) => c.name.includes('auth') || c.name.includes('session'))
+      const sessionCookie = cookies.find(
+        (c) => c.name.includes('auth') || c.name.includes('session')
+      )
       expect(sessionCookie).toBeDefined()
 
       // Reload page

@@ -53,7 +53,9 @@ test.describe('Post Publishing', () => {
 
     if (await approvedPost.isVisible({ timeout: 2000 })) {
       // Click publish now button
-      await approvedPost.locator('button:has-text("Publish Now"), button:has-text("Publish")').click()
+      await approvedPost
+        .locator('button:has-text("Publish Now"), button:has-text("Publish")')
+        .click()
 
       // Confirm immediate publish
       await page.click('button:has-text("Confirm"), button:has-text("Yes")')
@@ -102,9 +104,9 @@ test.describe('Post Publishing', () => {
     })
 
     // Should display scheduled posts
-    await expect(
-      page.locator('[data-status="scheduled"], .scheduled-post').first()
-    ).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('[data-status="scheduled"], .scheduled-post').first()).toBeVisible({
+      timeout: 5000,
+    })
   })
 
   test('should cancel a scheduled post', async ({ page }) => {
@@ -115,7 +117,9 @@ test.describe('Post Publishing', () => {
 
     if (await scheduledPost.isVisible({ timeout: 2000 })) {
       // Click cancel schedule button
-      await scheduledPost.locator('button:has-text("Cancel"), button:has-text("Unschedule")').click()
+      await scheduledPost
+        .locator('button:has-text("Cancel"), button:has-text("Unschedule")')
+        .click()
 
       // Confirm cancellation
       await page.click('button:has-text("Confirm"), button:has-text("Yes")')
@@ -132,21 +136,23 @@ test.describe('Post Publishing', () => {
     await page.goto('/posts')
 
     // Find a publishing or published post
-    const publishedPost = page.locator('[data-status="published"], [data-status="publishing"]').first()
+    const publishedPost = page
+      .locator('[data-status="published"], [data-status="publishing"]')
+      .first()
 
     if (await publishedPost.isVisible({ timeout: 2000 })) {
       // Click to view details
       await publishedPost.click()
 
       // Should show platform-specific publish status
-      await expect(
-        page.locator('text=/facebook|instagram|twitter|linkedin/i').first()
-      ).toBeVisible({ timeout: 5000 })
+      await expect(page.locator('text=/facebook|instagram|twitter|linkedin/i').first()).toBeVisible(
+        { timeout: 5000 }
+      )
 
       // Should show publish status indicators
-      await expect(
-        page.locator('text=/published|failed|pending/i').first()
-      ).toBeVisible({ timeout: 5000 })
+      await expect(page.locator('text=/published|failed|pending/i').first()).toBeVisible({
+        timeout: 5000,
+      })
     }
   })
 
@@ -180,7 +186,7 @@ test.describe('Post Publishing', () => {
   test('should require social account connection before publishing', async ({ page }) => {
     // Create a new user without social accounts
     const newEmail = `noaccount${Date.now()}@example.com`
-    
+
     // Register
     await page.goto('/auth/register')
     await page.fill('input[name="email"]', newEmail)
@@ -190,7 +196,7 @@ test.describe('Post Publishing', () => {
 
     // Complete onboarding without connecting social accounts
     await expect(page).toHaveURL('/onboarding', { timeout: 10000 })
-    
+
     // Fill business profile
     await page.fill('input[name="business_name"]', 'Test Business')
     await page.selectOption('select[name="industry"]', { label: 'Technology' })
@@ -200,7 +206,7 @@ test.describe('Post Publishing', () => {
     await page.fill('input[name="content_topics"]', 'tech')
     await page.selectOption('select[name="preferred_language"]', { label: 'English' })
     await page.click('button:has-text("Next")')
-    
+
     // Skip social connection
     await page.click('button:has-text("Skip")')
     await expect(page).toHaveURL('/dashboard', { timeout: 10000 })
@@ -209,17 +215,17 @@ test.describe('Post Publishing', () => {
     await page.goto('/posts')
 
     // Should show prompt to connect social accounts
-    await expect(
-      page.locator('text=/connect.*social|no.*account.*connected/i')
-    ).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('text=/connect.*social|no.*account.*connected/i')).toBeVisible({
+      timeout: 5000,
+    })
   })
 
   test('should show upcoming scheduled posts on dashboard', async ({ page }) => {
     await page.goto('/dashboard')
 
     // Should display upcoming posts widget
-    await expect(
-      page.locator('text=/upcoming|scheduled.*posts/i').first()
-    ).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('text=/upcoming|scheduled.*posts/i').first()).toBeVisible({
+      timeout: 5000,
+    })
   })
 })

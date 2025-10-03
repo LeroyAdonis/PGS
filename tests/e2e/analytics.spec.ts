@@ -99,7 +99,7 @@ test.describe('Analytics', () => {
     // Should display numeric values
     const metricCards = page.locator('[data-testid="metric-card"], .metric-card')
     const count = await metricCards.count()
-    
+
     expect(count).toBeGreaterThan(0)
   })
 
@@ -132,14 +132,17 @@ test.describe('Analytics', () => {
 
     // Should display chart with time series data
     await expect(
-      page.locator('canvas, svg').filter({ has: page.locator('path, line, rect') }).first()
+      page
+        .locator('canvas, svg')
+        .filter({ has: page.locator('path, line, rect') })
+        .first()
     ).toBeVisible({ timeout: 5000 })
   })
 
   test('should show no data message for new accounts', async ({ page }) => {
     // Create a new user
     const newEmail = `newanalytics${Date.now()}@example.com`
-    
+
     await page.goto('/auth/register')
     await page.fill('input[name="email"]', newEmail)
     await page.fill('input[name="password"]', 'SecurePass123!')
@@ -175,10 +178,7 @@ test.describe('Analytics', () => {
 
     if (await exportButton.isVisible({ timeout: 2000 })) {
       // Click export button
-      const [download] = await Promise.all([
-        page.waitForEvent('download'),
-        exportButton.click(),
-      ])
+      const [download] = await Promise.all([page.waitForEvent('download'), exportButton.click()])
 
       // Verify download was triggered
       expect(download).toBeDefined()
@@ -190,10 +190,10 @@ test.describe('Analytics', () => {
 
     // Should display metrics for each connected platform
     const platforms = ['Facebook', 'Instagram', 'Twitter', 'LinkedIn']
-    
+
     for (const platform of platforms) {
       const platformMetrics = page.locator(`text=/^${platform}/i`)
-      
+
       if (await platformMetrics.isVisible({ timeout: 1000 })) {
         // Verify platform has associated metrics
         await expect(platformMetrics).toBeVisible()
@@ -206,7 +206,7 @@ test.describe('Analytics', () => {
 
     // Should display insights or recommendations
     const insightsSection = page.locator('text=/insights|recommendations|best.*time/i').first()
-    
+
     if (await insightsSection.isVisible({ timeout: 2000 })) {
       await expect(insightsSection).toBeVisible()
     }
@@ -217,7 +217,7 @@ test.describe('Analytics', () => {
 
     // Look for comparison indicators (e.g., "+12% vs last month")
     const comparisonIndicator = page.locator('text=/[+\\-]\\d+%|vs.*previous/i').first()
-    
+
     if (await comparisonIndicator.isVisible({ timeout: 2000 })) {
       await expect(comparisonIndicator).toBeVisible()
     }
@@ -227,7 +227,9 @@ test.describe('Analytics', () => {
     await page.goto('/dashboard')
 
     // Should display quick analytics stats
-    await expect(page.locator('text=/engagement|impressions|posts.*published/i').first()).toBeVisible({
+    await expect(
+      page.locator('text=/engagement|impressions|posts.*published/i').first()
+    ).toBeVisible({
       timeout: 5000,
     })
 

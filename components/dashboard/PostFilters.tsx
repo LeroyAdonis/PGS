@@ -1,7 +1,13 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -68,10 +74,7 @@ export function PostFilters() {
         {/* Status Filter */}
         <div className="space-y-2">
           <Label htmlFor="status-filter">Status</Label>
-          <Select
-            value={status}
-            onValueChange={(value) => updateFilters({ status: value })}
-          >
+          <Select value={status} onValueChange={(value) => updateFilters({ status: value })}>
             <SelectTrigger id="status-filter">
               <SelectValue placeholder="All statuses" />
             </SelectTrigger>
@@ -89,10 +92,7 @@ export function PostFilters() {
         {/* Platform Filter */}
         <div className="space-y-2">
           <Label htmlFor="platform-filter">Platform</Label>
-          <Select
-            value={platform}
-            onValueChange={(value) => updateFilters({ platform: value })}
-          >
+          <Select value={platform} onValueChange={(value) => updateFilters({ platform: value })}>
             <SelectTrigger id="platform-filter">
               <SelectValue placeholder="All platforms" />
             </SelectTrigger>

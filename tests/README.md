@@ -90,6 +90,7 @@ npm run test:all
 ## E2E Test Coverage
 
 ### Authentication (auth.spec.ts)
+
 - ✅ User registration
 - ✅ Login with valid credentials
 - ✅ Login with invalid credentials
@@ -99,6 +100,7 @@ npm run test:all
 - ✅ Duplicate email detection
 
 ### Onboarding (onboarding.spec.ts)
+
 - ✅ Complete onboarding flow
 - ✅ Business profile creation
 - ✅ Business profile data persistence
@@ -108,6 +110,7 @@ npm run test:all
 - ✅ Redirect to onboarding for users without profile
 
 ### Post Generation (post-generation.spec.ts)
+
 - ✅ Generate AI post with caption and image
 - ✅ Approve generated post
 - ✅ Edit post caption
@@ -119,6 +122,7 @@ npm run test:all
 - ✅ Topic validation
 
 ### Publishing (publishing.spec.ts)
+
 - ✅ Schedule post for future publishing
 - ✅ Publish post immediately
 - ✅ Cancel scheduled post
@@ -130,6 +134,7 @@ npm run test:all
 - ✅ Dashboard widgets (published posts, upcoming posts)
 
 ### Analytics (analytics.spec.ts)
+
 - ✅ Display analytics dashboard
 - ✅ Display engagement metrics (likes, comments, shares)
 - ✅ Display top posts table
@@ -149,12 +154,14 @@ npm run test:all
 ## Performance Test Coverage
 
 ### AI Generation (ai-generation.test.ts)
+
 - ✅ Measure p95 latency for 100 AI generation requests
 - ✅ Target: <2s p95 latency
 - ✅ Separate text generation latency measurement
 - ✅ Separate image generation latency measurement
 
 ### Dashboard Load (dashboard-load.test.ts)
+
 - ✅ Measure p95 load time for 100 dashboard loads
 - ✅ Target: <500ms p95 load time
 - ✅ API response time measurement
@@ -165,11 +172,13 @@ npm run test:all
 ## Test Environment Setup
 
 ### Prerequisites
+
 - Node.js >= 20.0.0
 - Supabase CLI (for local testing)
 - Environment variables configured in `.env.local`
 
 ### Environment Variables
+
 ```bash
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
@@ -184,6 +193,7 @@ PAYSTACK_SECRET_KEY=your-paystack-key
 ```
 
 ### Local Supabase Setup
+
 ```bash
 # Start local Supabase instance
 supabase start
@@ -198,6 +208,7 @@ npm run db:seed
 ## Debugging Tests
 
 ### Playwright Debug Mode
+
 ```bash
 # Run tests with Playwright Inspector
 PWDEBUG=1 npx playwright test tests/e2e/auth.spec.ts
@@ -210,6 +221,7 @@ npx playwright test --trace on
 ```
 
 ### Jest Debug Mode
+
 ```bash
 # Run Jest in debug mode
 node --inspect-brk node_modules/.bin/jest --runInBand
@@ -237,7 +249,7 @@ Test users are created by the seed script:
 Test User:
   Email: testuser@example.com
   Password: Test1234!
-  
+
 Admin User:
   Email: admin@purpleglowsocial.com
   Password: Admin1234!
@@ -246,16 +258,19 @@ Admin User:
 ## Troubleshooting
 
 ### E2E Tests Fail Locally
+
 - Ensure Supabase is running: `supabase status`
 - Ensure dev server is running: `npm run dev`
 - Clear Playwright cache: `npx playwright install --force`
 
 ### Performance Tests Timeout
+
 - Performance tests are resource-intensive and may timeout on slow machines
 - Reduce SAMPLE_SIZE constant in test files for local testing
 - Ensure no other applications are consuming resources
 
 ### Jest Tests Fail
+
 - Check Node.js version: `node -v` (should be >= 20.0.0)
 - Clear Jest cache: `npm test -- --clearCache`
 - Regenerate Supabase types: `npm run db:types`
@@ -263,6 +278,7 @@ Admin User:
 ## Contributing
 
 When adding new features:
+
 1. Write unit tests for business logic
 2. Write integration tests for API routes
 3. Write E2E tests for user-facing features

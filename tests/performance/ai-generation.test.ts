@@ -14,13 +14,13 @@ test.describe('AI Generation Performance', () => {
     // Login once for all tests
     const context = await browser.newContext()
     const page = await context.newPage()
-    
+
     await page.goto('/auth/login')
     await page.fill('input[name="email"]', 'testuser@example.com')
     await page.fill('input[name="password"]', 'Test1234!')
     await page.click('button[type="submit"]')
     await expect(page).toHaveURL('/dashboard', { timeout: 10000 })
-    
+
     await context.close()
   })
 
@@ -32,7 +32,7 @@ test.describe('AI Generation Performance', () => {
     // Create a new context with authentication
     const context = await browser.newContext()
     const page = await context.newPage()
-    
+
     // Login
     await page.goto('/auth/login')
     await page.fill('input[name="email"]', 'testuser@example.com')
@@ -47,11 +47,14 @@ test.describe('AI Generation Performance', () => {
       try {
         // Navigate to post generation
         await page.goto('/posts')
-        
+
         // Fill in post generation form
         await page.click('button:has-text("Generate Post"), button:has-text("Create Post")')
-        await page.fill('input[name="topic"], textarea[name="topic"]', `Performance test topic ${i}`)
-        
+        await page.fill(
+          'input[name="topic"], textarea[name="topic"]',
+          `Performance test topic ${i}`
+        )
+
         // Select platform
         const facebookCheckbox = page.locator('input[type="checkbox"][value="facebook"]')
         if (await facebookCheckbox.isVisible({ timeout: 1000 })) {
@@ -60,10 +63,13 @@ test.describe('AI Generation Performance', () => {
 
         // Click generate and wait for completion
         await page.click('button:has-text("Generate"), button[type="submit"]')
-        
+
         // Wait for generation to complete
         await page.waitForSelector('text=/generating|loading/i', { timeout: 5000 })
-        await page.waitForSelector('text=/generating|loading/i', { state: 'hidden', timeout: 30000 })
+        await page.waitForSelector('text=/generating|loading/i', {
+          state: 'hidden',
+          timeout: 30000,
+        })
 
         const endTime = Date.now()
         const latency = endTime - startTime

@@ -59,9 +59,7 @@ export function AnalyticsSummary({ metrics }: AnalyticsSummaryProps) {
               {metric.change === 0 ? (
                 'No change from last period'
               ) : (
-                <>
-                  {formatChange(metric.change, metric.format)} from last period
-                </>
+                <>{formatChange(metric.change, metric.format)} from last period</>
               )}
             </p>
           </CardContent>

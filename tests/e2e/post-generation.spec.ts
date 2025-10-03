@@ -17,13 +17,20 @@ test.describe('Post Generation', () => {
 
   test('should generate a new post with AI', async ({ page }) => {
     // Navigate to posts page or find generate button
-    await page.click('a[href="/posts"], button:has-text("Generate Post"), button:has-text("Create Post")')
+    await page.click(
+      'a[href="/posts"], button:has-text("Generate Post"), button:has-text("Create Post")'
+    )
 
     // Fill in post generation form
-    await page.fill('input[name="topic"], textarea[name="topic"]', 'New product launch announcement')
-    
+    await page.fill(
+      'input[name="topic"], textarea[name="topic"]',
+      'New product launch announcement'
+    )
+
     // Select platforms
-    const facebookCheckbox = page.locator('input[type="checkbox"][value="facebook"], input[name="platform_facebook"]')
+    const facebookCheckbox = page.locator(
+      'input[type="checkbox"][value="facebook"], input[name="platform_facebook"]'
+    )
     if (await facebookCheckbox.isVisible()) {
       await facebookCheckbox.check()
     }
@@ -33,15 +40,15 @@ test.describe('Post Generation', () => {
 
     // Wait for AI generation (may take a few seconds)
     await expect(page.locator('text=/generating|loading/i')).toBeVisible({ timeout: 5000 })
-    
+
     // Wait for generation to complete
     await expect(page.locator('text=/generating|loading/i')).not.toBeVisible({ timeout: 30000 })
 
     // Verify post was generated - should see caption and image
-    await expect(
-      page.locator('textarea[name="caption"], div[role="textbox"]').first()
-    ).toBeVisible({ timeout: 5000 })
-    
+    await expect(page.locator('textarea[name="caption"], div[role="textbox"]').first()).toBeVisible(
+      { timeout: 5000 }
+    )
+
     // Verify image was generated
     await expect(page.locator('img[alt*="post"], img[alt*="generated"]').first()).toBeVisible({
       timeout: 5000,
@@ -54,7 +61,7 @@ test.describe('Post Generation', () => {
 
     // Find a pending post (from seed data or generate new one)
     const pendingPost = page.locator('[data-status="pending"]').first()
-    
+
     if (await pendingPost.isVisible({ timeout: 2000 })) {
       // Click approve button
       await pendingPost.locator('button:has-text("Approve")').click()
@@ -130,7 +137,7 @@ test.describe('Post Generation', () => {
 
     // Find a post with an image
     const postWithImage = page.locator('[data-testid="post-card"]').first()
-    
+
     // Click edit
     await postWithImage.locator('button:has-text("Edit")').click()
 
@@ -158,7 +165,7 @@ test.describe('Post Generation', () => {
     // All visible posts should have approved status
     const posts = page.locator('[data-testid="post-card"]')
     const count = await posts.count()
-    
+
     if (count > 0) {
       for (let i = 0; i < count; i++) {
         await expect(posts.nth(i)).toHaveAttribute('data-status', 'approved')
@@ -181,7 +188,7 @@ test.describe('Post Generation', () => {
     await page.goto('/posts')
 
     const pendingPost = page.locator('[data-status="pending"]').first()
-    
+
     if (await pendingPost.isVisible({ timeout: 2000 })) {
       // Click preview button
       await pendingPost.locator('button:has-text("Preview")').click()
@@ -190,9 +197,7 @@ test.describe('Post Generation', () => {
       await expect(page.locator('[role="dialog"], .modal').first()).toBeVisible({ timeout: 5000 })
 
       // Should display caption and image in preview
-      await expect(
-        page.locator('[role="dialog"], .modal').first().locator('img')
-      ).toBeVisible()
+      await expect(page.locator('[role="dialog"], .modal').first().locator('img')).toBeVisible()
     }
   })
 })
