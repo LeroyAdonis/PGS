@@ -3,23 +3,17 @@
 import * as React from 'react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { MessageCircle, Send, X } from 'lucide-react'
-
-interface ChatMessage {
-    id: string
-    message: string
-    sender: 'user' | 'system'
-    timestamp: Date
-}
+import { MessageCircle, X } from 'lucide-react'
+import { ChatMessage as ChatMessageComponent, type ChatMessageProps } from './ChatMessage'
+import { ChatInput } from './ChatInput'
 
 interface ChatWidgetProps {
     isOpen?: boolean
 }
 
 export function ChatWidget({ isOpen = false }: ChatWidgetProps) {
-    const [messages, setMessages] = useState<ChatMessage[]>([
+    const [messages, setMessages] = useState<ChatMessageProps[]>([
         {
             id: '1',
             message: 'Hi! I\'m your AI assistant. How can I help you with your social media content today?',
@@ -27,29 +21,25 @@ export function ChatWidget({ isOpen = false }: ChatWidgetProps) {
             timestamp: new Date(),
         },
     ])
-    const [inputMessage, setInputMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [showChat, setShowChat] = useState(isOpen)
 
-    const handleSendMessage = async () => {
-        if (!inputMessage.trim()) return
-
-        const userMessage: ChatMessage = {
+    const handleSendMessage = async (message: string) => {
+        const userMessage: ChatMessageProps = {
             id: Date.now().toString(),
-            message: inputMessage,
+            message,
             sender: 'user',
             timestamp: new Date(),
         }
 
         setMessages(prev => [...prev, userMessage])
-        setInputMessage('')
         setIsLoading(true)
 
         try {
             // Here you would integrate with CopilotKit or your chat API
             // For now, we'll simulate a response
             setTimeout(() => {
-                const systemMessage: ChatMessage = {
+                const systemMessage: ChatMessageProps = {
                     id: (Date.now() + 1).toString(),
                     message: 'I understand you want help with social media content. What specific task would you like assistance with?',
                     sender: 'system',
@@ -61,13 +51,6 @@ export function ChatWidget({ isOpen = false }: ChatWidgetProps) {
         } catch (error) {
             console.error('Failed to send message:', error)
             setIsLoading(false)
-        }
-    }
-
-    const handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault()
-            handleSendMessage()
         }
     }
 
@@ -101,19 +84,7 @@ export function ChatWidget({ isOpen = false }: ChatWidgetProps) {
                 <CardContent className="flex-1 flex flex-col p-0">
                     <div className="flex-1 overflow-y-auto p-4 space-y-3">
                         {messages.map((msg) => (
-                            <div
-                                key={msg.id}
-                                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                            >
-                                <div
-                                    className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${msg.sender === 'user'
-                                            ? 'bg-purple-600 text-white'
-                                            : 'bg-gray-100 text-gray-900'
-                                        }`}
-                                >
-                                    {msg.message}
-                                </div>
-                            </div>
+                            <ChatMessageComponent key={msg.id} {...msg} />
                         ))}
                         {isLoading && (
                             <div className="flex justify-start">
@@ -127,26 +98,7 @@ export function ChatWidget({ isOpen = false }: ChatWidgetProps) {
                             </div>
                         )}
                     </div>
-                    <div className="border-t p-3">
-                        <div className="flex space-x-2">
-                            <Input
-                                value={inputMessage}
-                                onChange={(e) => setInputMessage(e.target.value)}
-                                onKeyPress={handleKeyPress}
-                                placeholder="Type your message..."
-                                disabled={isLoading}
-                                className="flex-1 text-sm"
-                            />
-                            <Button
-                                onClick={handleSendMessage}
-                                disabled={isLoading || !inputMessage.trim()}
-                                size="sm"
-                                className="px-3"
-                            >
-                                <Send className="w-4 h-4" />
-                            </Button>
-                        </div>
-                    </div>
+                    <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
                 </CardContent>
             </Card>
         </div>
