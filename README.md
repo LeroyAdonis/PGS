@@ -202,7 +202,8 @@ npm run format:check     # Check code formatting
 
 # Database
 npm run db:types         # Generate TypeScript types from Supabase schema
-npm run db:seed          # Seed database with test data
+npm run db:seed          # Seed database with test data (SQL-based)
+npm run db:seed-users    # Seed test users via Supabase Admin API (recommended)
 
 # Testing
 npm test                 # Run Jest unit tests
@@ -344,6 +345,20 @@ npm run test:all
 - Verify redirect URIs match exactly (including trailing slashes)
 - Check API keys are for correct environment (test vs production)
 - Ensure OAuth apps have required scopes enabled
+
+### Login returns 400 Bad Request / Onboarding returns 401 Unauthorized
+
+**Quick Fix**: See `QUICK_FIX_GUIDE.md` for 5-minute solution.
+
+**Root cause**: Test users need to be created in Supabase Auth (not just the custom users table).
+
+**Solution**:
+1. Set up `.env.local` with Supabase keys (copy from `.env.local.template`)
+2. Apply migration: `supabase db push`
+3. Seed users: `npm run db:seed-users`
+4. Test login with `testuser@example.com` / `Test1234!`
+
+**Full details**: See `docs/AUTH_FIX_README.md`
 
 ---
 

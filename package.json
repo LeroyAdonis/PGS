@@ -12,6 +12,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "db:types": "supabase gen types typescript --local > lib/supabase/types.ts",
     "db:seed": "bash scripts/seed-db.sh",
+    "db:seed-users": "node scripts/seed-users.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:e2e": "playwright test",
