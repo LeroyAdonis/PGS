@@ -133,9 +133,7 @@ export function PostEditor({
           disabled={isLoading}
           className="resize-none"
         />
-        {errors.caption && (
-          <p className="text-sm text-destructive">{errors.caption.message}</p>
-        )}
+        {errors.caption && <p className="text-sm text-destructive">{errors.caption.message}</p>}
         <p className="text-xs text-muted-foreground">{caption?.length || 0} / 3000 characters</p>
       </div>
 
@@ -154,9 +152,7 @@ export function PostEditor({
           })}
           disabled={isLoading}
         />
-        {errors.hashtags && (
-          <p className="text-sm text-destructive">{errors.hashtags.message}</p>
-        )}
+        {errors.hashtags && <p className="text-sm text-destructive">{errors.hashtags.message}</p>}
         <p className="text-xs text-muted-foreground">{hashtags?.length || 0} hashtags</p>
       </div>
 
@@ -193,9 +189,7 @@ export function PostEditor({
           {...register('imageUrl')}
           disabled={isLoading}
         />
-        {errors.imageUrl && (
-          <p className="text-sm text-destructive">{errors.imageUrl.message}</p>
-        )}
+        {errors.imageUrl && <p className="text-sm text-destructive">{errors.imageUrl.message}</p>}
       </div>
 
       {/* Actions */}

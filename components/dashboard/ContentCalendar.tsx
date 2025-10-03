@@ -128,10 +128,7 @@ export function ContentCalendar({ posts, onDayClick }: ContentCalendarProps) {
       <div className="grid grid-cols-7 gap-1">
         {/* Day headers */}
         {DAYS_OF_WEEK.map((day) => (
-          <div
-            key={day}
-            className="p-2 text-center text-sm font-medium text-muted-foreground"
-          >
+          <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
             {day}
           </div>
         ))}

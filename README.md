@@ -353,6 +353,7 @@ npm run test:all
 **Root cause**: Test users need to be created in Supabase Auth (not just the custom users table).
 
 **Solution**:
+
 1. Set up `.env.local` with Supabase keys (copy from `.env.local.template`)
 2. Apply migration: `supabase db push`
 3. Seed users: `npm run db:seed-users`

@@ -3,10 +3,12 @@
 ## Issue Summary
 
 Users were experiencing authentication errors when:
+
 1. Logging in with test credentials (testuser@example.com / Test1234!)
 2. Attempting to create a business profile during onboarding
 
 ### Error Messages
+
 - `POST https://umklzllghajepovjlkcc.supabase.co/auth/v1/token?grant_type=password 400 (Bad Request)` in LoginForm.tsx
 - `Error creating business profile: Error: Authentication required.` in OnboardingWizard.tsx
 
@@ -21,6 +23,7 @@ The issue was caused by an **authentication inconsistency** in the business prof
 ## Technical Details
 
 ### Before (Incorrect)
+
 ```typescript
 import { createRouteClient } from '@/lib/supabase/server'
 
@@ -31,6 +34,7 @@ export async function POST(request: NextRequest) {
 ```
 
 ### After (Correct)
+
 ```typescript
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
@@ -53,7 +57,7 @@ export async function POST(request: NextRequest) {
 
 2. **Client Initialization**:
    - Old: `const supabase = await createRouteClient()`
-   - New: 
+   - New:
      ```typescript
      const cookieStore = cookies()
      const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
@@ -103,6 +107,6 @@ To verify the fix works in your environment:
 
 ## Additional Notes
 
-- This fix aligns with the deprecation notice for `@supabase/auth-helpers-nextjs` 
+- This fix aligns with the deprecation notice for `@supabase/auth-helpers-nextjs`
 - Future migration to `@supabase/ssr` should maintain the same cookie-based session pattern
 - All other API routes in the project already follow this correct pattern

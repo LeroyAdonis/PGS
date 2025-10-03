@@ -31,10 +31,12 @@ const statusLabels: Record<PostStatus, string> = {
 
 export function CalendarPost({ id, caption, status, scheduledTime, onClick }: CalendarPostProps) {
   const truncatedCaption = caption.length > 80 ? `${caption.slice(0, 80)}...` : caption
-  const time = scheduledTime ? new Date(scheduledTime).toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-  }) : null
+  const time = scheduledTime
+    ? new Date(scheduledTime).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : null
 
   return (
     <button
