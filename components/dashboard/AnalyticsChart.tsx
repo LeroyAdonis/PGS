@@ -111,10 +111,12 @@ export function AnalyticsChart({ data, title = 'Engagement Over Time' }: Analyti
                 <XAxis
                   dataKey="date"
                   className="text-xs"
-                  tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                  })}
+                  tickFormatter={(value) =>
+                    new Date(value).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })
+                  }
                 />
                 <YAxis className="text-xs" />
                 <Tooltip
@@ -123,11 +125,13 @@ export function AnalyticsChart({ data, title = 'Engagement Over Time' }: Analyti
                     border: '1px solid hsl(var(--border))',
                     borderRadius: '6px',
                   }}
-                  labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
+                  labelFormatter={(value) =>
+                    new Date(value).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })
+                  }
                 />
                 <Legend />
                 <Line

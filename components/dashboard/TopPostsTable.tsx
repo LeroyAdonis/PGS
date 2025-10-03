@@ -3,13 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 type Platform = 'facebook' | 'instagram' | 'twitter' | 'linkedin'
 

@@ -10,10 +10,12 @@ The application was experiencing two critical errors:
 ## Root Cause
 
 The application uses a **dual user management system**:
+
 - **Supabase Auth (`auth.users`)**: Primary authentication system
 - **Custom `users` table**: Stores additional user metadata (role, display_name, etc.)
 
 The seed data was only creating users in the custom `users` table, not in Supabase Auth. This meant:
+
 - Login failed because Supabase Auth didn't know about the test user
 - Even if login worked, API routes requiring authentication would fail
 
@@ -36,6 +38,7 @@ Added `npm run db:seed-users` command to easily seed test users.
 ### Step 1: Set Up Environment Variables
 
 1. Copy the template:
+
    ```bash
    cp .env.local.template .env.local
    ```

@@ -7,8 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createRouteClient } from '@/lib/supabase/server'
 import { disconnectSocialAccountSchema } from '@/lib/validation/social-account'
 import { handleError } from '@/lib/errors/handler'
 import { logger } from '@/lib/logging/logger'
@@ -23,8 +22,8 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     const validatedData = disconnectSocialAccountSchema.parse({ accountId })
 
     // Initialize Supabase client
-    const cookieStore = cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+
+    const supabase = createRouteClient()
 
     // Get current user
     const {

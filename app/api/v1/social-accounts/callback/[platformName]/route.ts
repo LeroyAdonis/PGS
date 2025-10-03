@@ -7,8 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createRouteClient } from '@/lib/supabase/server'
 import { oauthCallbackSchema } from '@/lib/validation/social-account'
 import { logger } from '@/lib/logging/logger'
 import {
@@ -91,8 +90,8 @@ export async function GET(request: NextRequest, { params }: { params: { platform
     // For now, we'll accept any state (simplified implementation)
 
     // Initialize Supabase client
-    const cookieStore = cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+
+    const supabase = createRouteClient()
 
     // TODO: Get user ID from stored OAuth session based on state
     // For now, we'll require the user to be logged in (simplified)

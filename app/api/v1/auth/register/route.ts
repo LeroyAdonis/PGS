@@ -7,8 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createRouteClient } from '@/lib/supabase/server'
 import { registerSchema } from '@/lib/validation/user'
 import { handleError } from '@/lib/errors/handler'
 import { logger } from '@/lib/logging/logger'
@@ -22,8 +21,8 @@ export async function POST(request: NextRequest) {
     const validatedData = registerSchema.parse(body)
 
     // Initialize Supabase client
-    const cookieStore = cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+
+    const supabase = createRouteClient()
 
     // Register user with Supabase Auth
     const { data, error } = await supabase.auth.signUp({

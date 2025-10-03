@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createRouteClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { handleError } from '@/lib/errors/handler'
 import { logger } from '@/lib/logging/logger'
@@ -15,8 +14,7 @@ export const runtime = 'edge'
 // POST /api/v1/admin/users/[id]/suspend - Suspend a user
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+    const supabase = createRouteClient()
 
     // Check admin role
     const {

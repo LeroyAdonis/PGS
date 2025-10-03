@@ -7,8 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createRouteClient } from '@/lib/supabase/server'
 import { createPostSchema, listPostsFiltersSchema } from '@/lib/validation/post'
 import { generatePostCaption } from '@/lib/gemini/text-generation'
 import { generateImage } from '@/lib/gemini/image-generation'
@@ -24,8 +23,8 @@ export const runtime = 'edge'
 export async function GET(request: NextRequest) {
   try {
     // Get authenticated user
-    const cookieStore = cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+
+    const supabase = createRouteClient()
 
     const {
       data: { user },
@@ -154,8 +153,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Get authenticated user
-    const cookieStore = cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+
+    const supabase = createRouteClient()
 
     const {
       data: { user },

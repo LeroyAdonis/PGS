@@ -152,6 +152,7 @@ public.users (
 ## Why Dual System?
 
 ### Supabase Auth Handles:
+
 - ✅ Password hashing (bcrypt)
 - ✅ Email verification
 - ✅ Session management (JWT)
@@ -161,6 +162,7 @@ public.users (
 - ✅ Security best practices
 
 ### Custom Users Table Adds:
+
 - ✅ Application-specific roles
 - ✅ Business logic (account status)
 - ✅ Custom user preferences
@@ -187,10 +189,12 @@ public.users (
 ### Edge Cases
 
 **User exists in auth.users but not public.users:**
+
 - Trigger should handle this automatically
 - Fallback: Seed script uses UPSERT to ensure sync
 
 **User exists in public.users but not auth.users:**
+
 - This shouldn't happen (violation of foreign key constraint)
 - Old seed data issue - fixed by new seed script
 
@@ -214,19 +218,19 @@ BEGIN
     VALUES (
         NEW.id,
         NEW.email,
-        COALESCE(NEW.raw_user_meta_data->>'display_name', 
+        COALESCE(NEW.raw_user_meta_data->>'display_name',
                  split_part(NEW.email, '@', 1)),
         COALESCE(NEW.raw_user_meta_data->>'role', 'user'),
         'active',
         NEW.email_confirmed_at IS NOT NULL,
         NEW.created_at,
-        '{"email_enabled": true, "in_app_enabled": true, 
+        '{"email_enabled": true, "in_app_enabled": true,
           "events": ["post_published", "analytics_ready"]}'::jsonb
     )
     ON CONFLICT (id) DO UPDATE SET
         email = EXCLUDED.email,
         email_verified = EXCLUDED.email_verified;
-    
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
