@@ -7,8 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createRouteClient } from '@/lib/supabase/server'
 import { createBusinessProfileSchema } from '@/lib/validation/business-profile'
 import { handleError } from '@/lib/errors/handler'
 import { logger } from '@/lib/logging/logger'
@@ -22,8 +21,7 @@ export async function POST(request: NextRequest) {
     const validatedData = createBusinessProfileSchema.parse(body)
 
     // Initialize Supabase client
-    const cookieStore = cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+    const supabase = await createRouteClient()
 
     // Get current user
     const {
@@ -75,7 +73,7 @@ export async function POST(request: NextRequest) {
         brand_logo_url: validatedData.logoUrl || null,
         automation_enabled: false,
         approved_posts_count: 0,
-      })
+      } as any)
       .select()
       .single()
 
@@ -83,33 +81,37 @@ export async function POST(request: NextRequest) {
       throw error
     }
 
+    if (!profile) {
+      throw new Error('Failed to create business profile - no data returned')
+    }
+
     // Log successful profile creation
     logger.info('Business profile created', {
       userId: user.id,
-      profileId: profile.id,
+      profileId: (profile as any).id,
       businessName: validatedData.name,
     })
 
     // Return created profile
     return NextResponse.json(
       {
-        id: profile.id,
-        owner_user_id: profile.owner_user_id,
-        business_name: profile.business_name,
-        industry: profile.industry,
-        target_audience: profile.target_audience,
-        brand_logo_url: profile.brand_logo_url,
-        primary_color: profile.primary_color,
-        secondary_color: profile.secondary_color,
-        content_tone: profile.content_tone,
-        content_topics: profile.content_topics,
-        preferred_language: profile.preferred_language,
-        posting_frequency: profile.posting_frequency,
-        automation_enabled: profile.automation_enabled,
-        automation_eligible_at: profile.automation_eligible_at,
-        approved_posts_count: profile.approved_posts_count,
-        created_at: profile.created_at,
-        updated_at: profile.updated_at,
+        id: (profile as any).id,
+        owner_user_id: (profile as any).owner_user_id,
+        business_name: (profile as any).business_name,
+        industry: (profile as any).industry,
+        target_audience: (profile as any).target_audience,
+        brand_logo_url: (profile as any).brand_logo_url,
+        primary_color: (profile as any).primary_color,
+        secondary_color: (profile as any).secondary_color,
+        content_tone: (profile as any).content_tone,
+        content_topics: (profile as any).content_topics,
+        preferred_language: (profile as any).preferred_language,
+        posting_frequency: (profile as any).posting_frequency,
+        automation_enabled: (profile as any).automation_enabled,
+        automation_eligible_at: (profile as any).automation_eligible_at,
+        approved_posts_count: (profile as any).approved_posts_count,
+        created_at: (profile as any).created_at,
+        updated_at: (profile as any).updated_at,
       },
       { status: 201 }
     )

@@ -40,3 +40,12 @@ export async function createClient() {
     },
   })
 }
+
+/**
+ * Create a Supabase client for API Routes (App Router)
+ * This is a convenience wrapper around createClient for use in API route handlers
+ * Handles cookie management for authentication
+ */
+export async function createRouteClient() {
+  return createClient()
+}
