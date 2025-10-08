@@ -6,7 +6,7 @@ description: "Task list for Purple Glow Social implementation"
 
 **Input**: Design documents from `/specs/001-purple-glow-social/`
 **Branch**: `001-purple-glow-social`
-**Date Generated**: October 8, 2025
+**Date Generated**: October 8, 2025 (Regenerated with full coverage)
 
 **Prerequisites**:
 
@@ -17,9 +17,9 @@ description: "Task list for Purple Glow Social implementation"
 - ✅ contracts/openapi.yaml (API endpoints)
 - ✅ quickstart.md (setup guide)
 
-**Tests**: NOT requested in specification - no test tasks included
+**Tests**: ✅ INCLUDED - Comprehensive test tasks per Constitution Article V (unit, integration, E2E, contract tests)
 
-**Organization**: Tasks are grouped by user story to enable independent implementation and testing.
+**Organization**: Tasks are grouped by user story to enable independent implementation and testing. All 7 user stories (US1-US7) have complete task coverage.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -255,6 +255,661 @@ description: "Task list for Purple Glow Social implementation"
 
 - [ ] T113 [P] [US3] Create ConfidenceScoreWidget showing current score and progress in `components/dashboard/confidence-score-widget.tsx`
 - [ ] T114 [P] [US3] Create AutomationPromptModal suggesting Phase 2 when threshold met in `components/dashboard/automation-prompt-modal.tsx`
+
+### Integration for US3
+
+- [ ] T115 [US3] Wire up confidence score display in dashboard
+- [ ] T116 [US3] Implement automation toggle with confirmation dialog
+- [ ] T117 [US3] Add notification when automation threshold reached
+
+**Checkpoint**: ✅ User Story 3 complete - Automated posting with confidence-based learning. Verify score increases and automation prompt appears.
+
+---
+
+## Phase 7: User Story 4 - AI Image Generation and Brand Integration (Priority: P2)
+
+**Goal**: Enable AI to generate visually appealing images incorporating brand elements for social media posts
+
+**Independent Test**: Generate images with brand colors/logo, verify images attached to posts, test rejection/regeneration flow
+
+### AI Services for US4
+
+- [ ] T118 [P] [US4] Implement Gemini image generation service in `lib/ai/gemini-images.ts` using gemini-2.5-flash-image-preview (Nano Banana)
+- [ ] T119 [P] [US4] Create image prompt engineering service in `lib/ai/image-prompts.ts` for SA cultural context
+- [ ] T120 [P] [US4] Implement brand element integration service in `lib/services/brand-integration.ts` to overlay logos and apply color schemes
+- [ ] T121 [US4] Create image generation orchestrator in `lib/services/image-generation.ts` combining prompts, AI, and brand assets
+
+### API Endpoints for US4
+
+- [ ] T122 [P] [US4] Create POST /api/posts/[postId]/generate-image endpoint in `app/api/posts/[postId]/generate-image/route.ts`
+- [ ] T123 [P] [US4] Create POST /api/posts/[postId]/regenerate-image endpoint in same file
+- [ ] T124 [P] [US4] Create DELETE /api/posts/[postId]/images/[imageId] endpoint in `app/api/posts/[postId]/images/[imageId]/route.ts`
+- [ ] T125 [P] [US4] Extend POST /api/brand-assets to handle image processing and thumbnail generation
+
+### UI Components for US4
+
+- [ ] T126 [P] [US4] Create ImagePreview component with brand element indicators in `components/content/image-preview.tsx`
+- [ ] T127 [P] [US4] Create ImageGenerationDialog with style/theme options in `components/content/image-generation-dialog.tsx`
+- [ ] T128 [P] [US4] Create ImageEditor component for basic adjustments in `components/content/image-editor.tsx`
+- [ ] T129 [US4] Enhance ContentCard component to display generated images
+- [ ] T130 [US4] Create image gallery view for selecting from multiple generated options in `components/content/image-gallery.tsx`
+
+### Background Jobs for US4
+
+- [ ] T131 [US4] Create Supabase Edge Function for asynchronous image generation in `supabase/functions/generate-image/index.ts`
+- [ ] T132 [US4] Implement image processing queue with retry logic for failed generations
+
+### Integration for US4
+
+- [ ] T133 [US4] Wire up image generation: post creation → auto-generate image → attach to post
+- [ ] T134 [US4] Implement image approval workflow: accept/reject/regenerate options
+- [ ] T135 [US4] Add fallback to text-only posts if image generation fails after 3 attempts
+- [ ] T136 [US4] Implement loading states and progress indicators for image generation (10s timeout)
+
+**Checkpoint**: ✅ User Story 4 complete - AI generates branded images. Verify images include brand elements and attach to posts correctly.
+
+---
+
+## Phase 8: User Story 5 - Subscription Management and Billing (Priority: P2)
+
+**Goal**: Enable users to manage subscription tiers, billing information, and payment methods
+
+**Independent Test**: Sign up for trial, upgrade/downgrade tiers, update payment method, cancel subscription, verify billing events logged
+
+### Payment Services for US5
+
+- [ ] T137 [P] [US5] Implement Paystack SDK integration in `lib/payments/paystack.ts` with ZAR currency support
+- [ ] T138 [P] [US5] Create subscription management service in `lib/services/subscription.ts` with tier change logic
+- [ ] T139 [P] [US5] Implement billing event handler service in `lib/services/billing-events.ts` for webhook processing
+- [ ] T140 [US5] Create subscription usage tracking service in `lib/services/usage-tracking.ts` with limit enforcement
+
+### API Endpoints for US5
+
+- [ ] T141 [P] [US5] Create GET /api/subscriptions endpoint in `app/api/subscriptions/route.ts`
+- [ ] T142 [P] [US5] Create POST /api/subscriptions/upgrade endpoint in `app/api/subscriptions/upgrade/route.ts`
+- [ ] T143 [P] [US5] Create POST /api/subscriptions/downgrade endpoint in `app/api/subscriptions/downgrade/route.ts`
+- [ ] T144 [P] [US5] Create POST /api/subscriptions/cancel endpoint in `app/api/subscriptions/cancel/route.ts`
+- [ ] T145 [P] [US5] Create POST /api/subscriptions/reactivate endpoint in `app/api/subscriptions/reactivate/route.ts`
+- [ ] T146 [P] [US5] Create PATCH /api/subscriptions/payment-method endpoint in `app/api/subscriptions/payment-method/route.ts`
+- [ ] T147 [P] [US5] Create POST /api/webhooks/paystack endpoint with signature verification in `app/api/webhooks/paystack/route.ts`
+- [ ] T148 [P] [US5] Create GET /api/subscriptions/usage endpoint in `app/api/subscriptions/usage/route.ts`
+
+### UI Components for US5
+
+- [ ] T149 [US5] Create billing settings page in `app/(dashboard)/settings/billing/page.tsx`
+- [ ] T150 [P] [US5] Create SubscriptionCard component showing current tier and usage in `components/settings/subscription-card.tsx`
+- [ ] T151 [P] [US5] Create TierComparisonTable component for upgrade/downgrade in `components/settings/tier-comparison-table.tsx`
+- [ ] T152 [P] [US5] Create PaymentMethodForm component in `components/settings/payment-method-form.tsx`
+- [ ] T153 [P] [US5] Create BillingHistory component in `components/settings/billing-history.tsx`
+- [ ] T154 [P] [US5] Create UsageMeter component showing post limit progress in `components/settings/usage-meter.tsx`
+- [ ] T155 [US5] Create subscription upgrade/downgrade confirmation modals
+
+### Background Jobs for US5
+
+- [ ] T156 [US5] Create Supabase Edge Function for trial expiration in `supabase/functions/trial-expiration/index.ts`
+- [ ] T157 [US5] Create Supabase Edge Function for usage limit notifications (80%, 100%) in `supabase/functions/usage-notifications/index.ts`
+- [ ] T158 [US5] Enhance pg_cron job to reset subscription usage at billing cycle end (from T025)
+
+### Integration for US5
+
+- [ ] T159 [US5] Wire up subscription flow: trial → billing → tier changes → usage tracking
+- [ ] T160 [US5] Implement Paystack webhook handlers: payment success/failure, subscription events
+- [ ] T161 [US5] Add prorated billing calculation for mid-cycle upgrades
+- [ ] T162 [US5] Implement grace period logic for failed payments (7 days)
+- [ ] T163 [US5] Add subscription state transitions: active ↔ past_due ↔ canceled
+
+**Checkpoint**: ✅ User Story 5 complete - Full subscription management. Verify tier changes, billing, and usage limits work correctly.
+
+---
+
+## Phase 9: User Story 6 - Analytics Dashboard (Priority: P3)
+
+**Goal**: Enable users to view engagement metrics and performance analytics for their social media posts
+
+**Independent Test**: Publish posts, sync metrics from platforms, verify analytics display correctly with filtering and time periods
+
+### Analytics Services for US6
+
+- [ ] T164 [P] [US6] Implement Facebook Graph API analytics sync in `lib/social/facebook-analytics.ts`
+- [ ] T165 [P] [US6] Implement Instagram Graph API analytics sync in `lib/social/instagram-analytics.ts`
+- [ ] T166 [P] [US6] Implement Twitter API v2 analytics sync in `lib/social/twitter-analytics.ts`
+- [ ] T167 [P] [US6] Implement LinkedIn API analytics sync in `lib/social/linkedin-analytics.ts`
+- [ ] T168 [US6] Create analytics aggregation service in `lib/services/analytics.ts` combining all platforms
+- [ ] T169 [US6] Implement engagement rate calculation service per data-model.md formula
+
+### API Endpoints for US6
+
+- [ ] T170 [P] [US6] Create GET /api/analytics endpoint with date range filtering in `app/api/analytics/route.ts`
+- [ ] T171 [P] [US6] Create GET /api/analytics/posts/[postId] endpoint in `app/api/analytics/posts/[postId]/route.ts`
+- [ ] T172 [P] [US6] Create POST /api/analytics/sync endpoint to trigger manual sync in `app/api/analytics/sync/route.ts`
+- [ ] T173 [P] [US6] Create GET /api/analytics/summary endpoint for dashboard widgets in `app/api/analytics/summary/route.ts`
+
+### UI Components for US6
+
+- [ ] T174 [US6] Create analytics dashboard page in `app/(dashboard)/analytics/page.tsx`
+- [ ] T175 [P] [US6] Create EngagementChart component with time series visualization in `components/analytics/engagement-chart.tsx`
+- [ ] T176 [P] [US6] Create PostPerformanceTable component with sorting in `components/analytics/post-performance-table.tsx`
+- [ ] T177 [P] [US6] Create PlatformComparisonWidget in `components/analytics/platform-comparison-widget.tsx`
+- [ ] T178 [P] [US6] Create DateRangePicker component for filtering in `components/analytics/date-range-picker.tsx`
+- [ ] T179 [P] [US6] Create MetricCard component for key statistics in `components/analytics/metric-card.tsx`
+- [ ] T180 [US6] Create TopPerformingPosts widget for dashboard in `components/dashboard/top-performing-posts.tsx`
+
+### Background Jobs for US6
+
+- [ ] T181 [US6] Create Supabase Edge Function for scheduled analytics sync in `supabase/functions/sync-analytics/index.ts`
+- [ ] T182 [US6] Enhance pg_cron job for analytics sync every 4 hours (from T025)
+
+### Integration for US6
+
+- [ ] T183 [US6] Wire up analytics sync: schedule → fetch from platforms → store → calculate rates
+- [ ] T184 [US6] Implement analytics data caching to reduce API calls
+- [ ] T185 [US6] Add real-time updates when new analytics data synced
+- [ ] T186 [US6] Implement export functionality for analytics reports (CSV/PDF)
+
+**Checkpoint**: ✅ User Story 6 complete - Analytics dashboard. Verify metrics sync from all platforms and display correctly.
+
+---
+
+## Phase 10: User Story 7 - CopilotKit Chat Assistant (Priority: P3)
+
+**Goal**: Enable natural language commands via chat interface for managing content and settings
+
+**Independent Test**: Use chat to generate posts, view analytics, change settings, verify commands executed correctly
+
+### CopilotKit Services for US7
+
+- [ ] T187 [P] [US7] Setup CopilotKit SDK and configuration in `lib/copilot/config.ts`
+- [ ] T188 [P] [US7] Create command parser service in `lib/copilot/command-parser.ts` for intent recognition
+- [ ] T189 [P] [US7] Implement action handlers in `lib/copilot/actions/` for each command type
+- [ ] T190 [US7] Create context provider for chat state in `lib/copilot/context-provider.ts`
+
+### Command Action Handlers for US7
+
+- [ ] T191 [P] [US7] Create content generation action handler in `lib/copilot/actions/generate-content.ts`
+- [ ] T192 [P] [US7] Create analytics query action handler in `lib/copilot/actions/query-analytics.ts`
+- [ ] T193 [P] [US7] Create settings modification action handler in `lib/copilot/actions/modify-settings.ts`
+- [ ] T194 [P] [US7] Create post management action handler in `lib/copilot/actions/manage-posts.ts`
+- [ ] T195 [US7] Create help/information action handler in `lib/copilot/actions/help.ts`
+
+### API Endpoints for US7
+
+- [ ] T196 [P] [US7] Create POST /api/copilot/chat endpoint in `app/api/copilot/chat/route.ts`
+- [ ] T197 [P] [US7] Create POST /api/copilot/execute endpoint for action execution in `app/api/copilot/execute/route.ts`
+
+### UI Components for US7
+
+- [ ] T198 [US7] Create chat interface component in `components/chat/chat-interface.tsx`
+- [ ] T199 [P] [US7] Create ChatMessage component with rich formatting in `components/chat/chat-message.tsx`
+- [ ] T200 [P] [US7] Create ChatInput component with autocomplete in `components/chat/chat-input.tsx`
+- [ ] T201 [P] [US7] Create SuggestedActions component for quick commands in `components/chat/suggested-actions.tsx`
+- [ ] T202 [US7] Integrate chat interface into dashboard layout with toggle button
+
+### Integration for US7
+
+- [ ] T203 [US7] Wire up chat flow: input → parse intent → execute action → return result
+- [ ] T204 [US7] Implement streaming responses for long-running commands
+- [ ] T205 [US7] Add context awareness (current page, selected post, etc.)
+- [ ] T206 [US7] Implement chat history persistence and search
+
+**Checkpoint**: ✅ User Story 7 complete - CopilotKit chat assistant. Verify natural language commands execute correctly.
+
+---
+
+## Phase 11: Content Calendar Interface (FR-009)
+
+**Goal**: Provide visual calendar interface for managing scheduled content
+
+**Independent Test**: View calendar, drag-drop posts to reschedule, verify calendar syncs with post schedule
+
+### Calendar Services for Calendar
+
+- [ ] T207 [P] [Calendar] Create calendar data service in `lib/services/calendar.ts` with date range queries
+- [ ] T208 [P] [Calendar] Implement drag-drop scheduling service in `lib/services/scheduling.ts`
+
+### API Endpoints for Calendar
+
+- [ ] T209 [P] [Calendar] Create GET /api/calendar endpoint with month/week/day views in `app/api/calendar/route.ts`
+- [ ] T210 [P] [Calendar] Create PATCH /api/posts/[postId]/reschedule endpoint in `app/api/posts/[postId]/reschedule/route.ts`
+
+### UI Components for Calendar
+
+- [ ] T211 [Calendar] Create calendar page in `app/(dashboard)/calendar/page.tsx`
+- [ ] T212 [P] [Calendar] Create CalendarGrid component with month view in `components/calendar/calendar-grid.tsx`
+- [ ] T213 [P] [Calendar] Create WeekView component in `components/calendar/week-view.tsx`
+- [ ] T214 [P] [Calendar] Create DayView component in `components/calendar/day-view.tsx`
+- [ ] T215 [P] [Calendar] Create PostPreviewCard component for calendar slots in `components/calendar/post-preview-card.tsx`
+- [ ] T216 [Calendar] Implement drag-and-drop functionality with react-dnd or similar
+
+### Integration for Calendar
+
+- [ ] T217 [Calendar] Wire up calendar: load posts → display in calendar → drag to reschedule → update
+- [ ] T218 [Calendar] Add conflict detection for overlapping scheduled posts
+- [ ] T219 [Calendar] Implement optimal posting time suggestions based on analytics
+
+**Checkpoint**: ✅ Calendar interface complete. Verify visual calendar displays posts and rescheduling works.
+
+---
+
+## Phase 12: Admin Features (FR-018, FR-020)
+
+**Goal**: Provide admin dashboard and lead insights tool for platform management
+
+**Independent Test**: Admin logs in, views platform analytics, uses lead scraper, identifies prospects
+
+### Admin Services
+
+- [ ] T220 [P] [Admin] Create admin analytics service in `lib/services/admin-analytics.ts` aggregating platform-wide metrics
+- [ ] T221 [P] [Admin] Implement lead scraping service in `lib/services/lead-scraper.ts` using Chrome DevTools MCP
+- [ ] T222 [P] [Admin] Create opportunity scoring algorithm in `lib/services/opportunity-scoring.ts`
+
+### API Endpoints for Admin
+
+- [ ] T223 [P] [Admin] Create GET /api/admin/dashboard endpoint in `app/api/admin/dashboard/route.ts`
+- [ ] T224 [P] [Admin] Create GET /api/admin/users endpoint with pagination in `app/api/admin/users/route.ts`
+- [ ] T225 [P] [Admin] Create GET /api/admin/leads endpoint in `app/api/admin/leads/route.ts`
+- [ ] T226 [P] [Admin] Create POST /api/admin/leads/scrape endpoint in `app/api/admin/leads/scrape/route.ts`
+- [ ] T227 [P] [Admin] Create PATCH /api/admin/leads/[leadId] endpoint for status updates in `app/api/admin/leads/[leadId]/route.ts`
+
+### UI Components for Admin
+
+- [ ] T228 [Admin] Create admin dashboard page in `app/(admin)/dashboard/page.tsx`
+- [ ] T229 [Admin] Create admin lead insights page in `app/(admin)/insights/page.tsx`
+- [ ] T230 [P] [Admin] Create PlatformMetrics component in `components/admin/platform-metrics.tsx`
+- [ ] T231 [P] [Admin] Create UserTable component with search and filters in `components/admin/user-table.tsx`
+- [ ] T232 [P] [Admin] Create LeadInsightsTable component in `components/admin/lead-insights-table.tsx`
+- [ ] T233 [P] [Admin] Create LeadScraper component with social handle input in `components/admin/lead-scraper.tsx`
+- [ ] T234 [P] [Admin] Create OpportunityScoreCard component in `components/admin/opportunity-score-card.tsx`
+
+### Integration for Admin
+
+- [ ] T235 [Admin] Wire up admin dashboard with real-time platform metrics
+- [ ] T236 [Admin] Implement lead scraping with Chrome DevTools MCP integration
+- [ ] T237 [Admin] Add lead status workflow: new → contacted → qualified → converted
+- [ ] T238 [Admin] Implement admin role-based access control checks
+
+**Checkpoint**: ✅ Admin features complete. Verify admin can view analytics and identify leads.
+
+---
+
+## Phase 13: POPIA Compliance & Legal (FR-021, FR-022)
+
+**Goal**: Ensure POPIA compliance for all user data and present Terms & Privacy Policy
+
+**Independent Test**: User signs up, accepts T&C, requests data export, requests data deletion, verify compliance
+
+### POPIA Services
+
+- [ ] T239 [P] [POPIA] Create data retention policy service in `lib/services/data-retention.ts` with auto-deletion
+- [ ] T240 [P] [POPIA] Implement consent management service in `lib/services/consent.ts` tracking user agreements
+- [ ] T241 [P] [POPIA] Create data export service in `lib/services/data-export.ts` for GDPR/POPIA requests
+- [ ] T242 [P] [POPIA] Implement data deletion service in `lib/services/data-deletion.ts` with cascade logic
+
+### API Endpoints for POPIA
+
+- [ ] T243 [P] [POPIA] Create GET /api/privacy/export endpoint for data export in `app/api/privacy/export/route.ts`
+- [ ] T244 [P] [POPIA] Create POST /api/privacy/delete endpoint for account deletion in `app/api/privacy/delete/route.ts`
+- [ ] T245 [P] [POPIA] Create POST /api/legal/consent endpoint for tracking agreements in `app/api/legal/consent/route.ts`
+- [ ] T246 [P] [POPIA] Create GET /api/legal/terms endpoint in `app/api/legal/terms/route.ts`
+- [ ] T247 [P] [POPIA] Create GET /api/legal/privacy endpoint in `app/api/legal/privacy/route.ts`
+
+### UI Components for POPIA
+
+- [ ] T248 [POPIA] Create Terms & Conditions page in `app/(marketing)/terms/page.tsx`
+- [ ] T249 [POPIA] Create Privacy Policy page in `app/(marketing)/privacy/page.tsx`
+- [ ] T250 [P] [POPIA] Create ConsentModal component for signup in `components/legal/consent-modal.tsx`
+- [ ] T251 [P] [POPIA] Create PrivacySettings component in `components/settings/privacy-settings.tsx`
+- [ ] T252 [P] [POPIA] Create DataExportButton component in `components/settings/data-export-button.tsx`
+- [ ] T253 [P] [POPIA] Create AccountDeletionButton component with confirmation in `components/settings/account-deletion-button.tsx`
+
+### Database & Compliance
+
+- [ ] T254 [POPIA] Add consent_tracking table migration in `supabase/migrations/016_create_consent_tracking.sql`
+- [ ] T255 [POPIA] Add data_deletion_requests table migration in `supabase/migrations/017_create_data_deletion_requests.sql`
+- [ ] T256 [POPIA] Create audit log trigger for data access tracking
+- [ ] T257 [POPIA] Implement data retention policies in database (auto-delete after 7 years)
+
+### Integration for POPIA
+
+- [ ] T258 [POPIA] Wire up consent flow: signup → present T&C → require acceptance → track
+- [ ] T259 [POPIA] Implement data export: request → generate JSON/CSV → email download link
+- [ ] T260 [POPIA] Implement deletion: request → verify identity → cascade delete → notify
+- [ ] T261 [POPIA] Add POPIA compliance notices throughout app (data collection, processing)
+
+**Checkpoint**: ✅ POPIA compliance complete. Verify consent tracking, data export, and deletion work correctly.
+
+---
+
+## Phase 14: Comprehensive Testing (Constitution Article V)
+
+**Goal**: Implement multi-layered testing strategy: unit, integration, E2E, and contract tests
+
+**Independent Test**: Run full test suite, verify all critical paths covered, achieve >80% coverage
+
+### Testing Infrastructure
+
+- [ ] T262 [Test] Setup Vitest configuration for unit/integration tests in `vitest.config.ts`
+- [ ] T263 [Test] Setup Playwright configuration for E2E tests in `playwright.config.ts`
+- [ ] T264 [P] [Test] Create test utilities and helpers in `tests/utils/`
+- [ ] T265 [P] [Test] Create test fixtures for database seeding in `tests/fixtures/`
+- [ ] T266 [P] [Test] Setup test database with migrations in CI/CD
+- [ ] T267 [P] [Test] Create API test utilities with auth mocking in `tests/utils/api-helpers.ts`
+
+### Unit Tests (Business Logic)
+
+- [ ] T268 [P] [Test] Unit tests for confidence scoring algorithm in `tests/unit/ai/confidence-scoring.test.ts`
+- [ ] T269 [P] [Test] Unit tests for subscription tier limits in `tests/unit/services/subscription.test.ts`
+- [ ] T270 [P] [Test] Unit tests for content generation in `tests/unit/services/content-generation.test.ts`
+- [ ] T271 [P] [Test] Unit tests for OAuth token handling in `tests/unit/services/oauth.test.ts`
+- [ ] T272 [P] [Test] Unit tests for analytics calculations in `tests/unit/services/analytics.test.ts`
+- [ ] T273 [P] [Test] Unit tests for rate limiting in `tests/unit/utils/rate-limit.test.ts`
+- [ ] T274 [P] [Test] Unit tests for Zod validations in `tests/unit/validations/`
+- [ ] T275 [P] [Test] Unit tests for image generation in `tests/unit/ai/gemini-images.test.ts`
+- [ ] T276 [P] [Test] Unit tests for POPIA services in `tests/unit/services/data-retention.test.ts`
+
+### Integration Tests (API Routes)
+
+- [ ] T277 [P] [Test] Integration tests for auth endpoints in `tests/integration/api/auth.test.ts`
+- [ ] T278 [P] [Test] Integration tests for business profile endpoints in `tests/integration/api/business-profiles.test.ts`
+- [ ] T279 [P] [Test] Integration tests for post endpoints in `tests/integration/api/posts.test.ts`
+- [ ] T280 [P] [Test] Integration tests for social account endpoints in `tests/integration/api/social-accounts.test.ts`
+- [ ] T281 [P] [Test] Integration tests for subscription endpoints in `tests/integration/api/subscriptions.test.ts`
+- [ ] T282 [P] [Test] Integration tests for analytics endpoints in `tests/integration/api/analytics.test.ts`
+- [ ] T283 [P] [Test] Integration tests for admin endpoints in `tests/integration/api/admin.test.ts`
+- [ ] T284 [P] [Test] Integration tests for webhook handlers in `tests/integration/api/webhooks.test.ts`
+
+### E2E Tests (Critical User Flows)
+
+- [ ] T285 [Test] E2E test for complete onboarding flow (US1) in `tests/e2e/onboarding.spec.ts`
+- [ ] T286 [Test] E2E test for content generation and approval (US2) in `tests/e2e/content-generation.spec.ts`
+- [ ] T287 [Test] E2E test for OAuth connection flow in `tests/e2e/oauth-connection.spec.ts`
+- [ ] T288 [Test] E2E test for subscription upgrade/downgrade (US5) in `tests/e2e/subscription-management.spec.ts`
+- [ ] T289 [Test] E2E test for image generation workflow (US4) in `tests/e2e/image-generation.spec.ts`
+- [ ] T290 [Test] E2E test for analytics dashboard (US6) in `tests/e2e/analytics.spec.ts`
+- [ ] T291 [Test] E2E test for chat commands (US7) in `tests/e2e/copilot-chat.spec.ts`
+- [ ] T292 [Test] E2E test for calendar rescheduling in `tests/e2e/calendar.spec.ts`
+
+### Contract Tests
+
+- [ ] T293 [P] [Test] Setup contract testing with OpenAPI validation
+- [ ] T294 [P] [Test] Contract tests for all API endpoints against openapi.yaml in `tests/contract/api-contract.test.ts`
+- [ ] T295 [P] [Test] Contract tests for webhook payloads in `tests/contract/webhooks-contract.test.ts`
+
+### Performance & Security Tests
+
+- [ ] T296 [Test] Performance tests for AI generation (<3s text, <10s images) in `tests/performance/ai-generation.test.ts`
+- [ ] T297 [Test] Performance tests for API response times (<200ms p95) in `tests/performance/api-performance.test.ts`
+- [ ] T298 [Test] Security tests for RLS policies in `tests/security/rls-policies.test.ts`
+- [ ] T299 [Test] Security tests for auth token validation in `tests/security/auth-security.test.ts`
+- [ ] T300 [Test] Security tests for POPIA compliance in `tests/security/popia-compliance.test.ts`
+
+### CI/CD Integration
+
+- [ ] T301 [Test] Create GitHub Actions workflow for test execution in `.github/workflows/test.yml`
+- [ ] T302 [Test] Setup test coverage reporting with minimum 80% threshold
+- [ ] T303 [Test] Add pre-commit hooks for running unit tests
+- [ ] T304 [Test] Setup E2E tests to run on PR creation
+
+**Checkpoint**: ✅ Comprehensive testing complete. Verify all tests pass and coverage targets met.
+
+---
+
+## Phase 15: Edge Cases & Error Handling
+
+**Goal**: Implement robust error handling for edge cases identified in spec.md
+
+**Independent Test**: Trigger each edge case scenario, verify graceful handling and user notification
+
+### Edge Case Implementations
+
+- [ ] T305 [P] [Edge] Implement OAuth token revocation detection and notification service in `lib/services/oauth-monitoring.ts`
+- [ ] T306 [P] [Edge] Create platform-specific error handling with selective disabling in `lib/social/error-handlers.ts`
+- [ ] T307 [P] [Edge] Implement scheduled post preservation when platform disconnected
+- [ ] T308 [P] [Edge] Create niche industry content adaptation in AI prompts
+- [ ] T309 [P] [Edge] Implement tier limit notifications (80%, 100%) with upgrade prompts
+- [ ] T310 [P] [Edge] Create image generation fallback to text-only posts
+- [ ] T311 [P] [Edge] Implement service downtime queue with automatic retry
+- [ ] T312 [P] [Edge] Create Gemini API rate limit handling with exponential backoff
+
+### Notification System
+
+- [ ] T313 [P] [Edge] Create notification service in `lib/services/notifications.ts` (email + push)
+- [ ] T314 [P] [Edge] Implement email templates for critical notifications
+- [ ] T315 [P] [Edge] Create push notification service integration
+
+**Checkpoint**: ✅ Edge cases handled. Verify system handles failures gracefully.
+
+---
+
+## Phase 16: Performance Monitoring & Observability (NFR Validation)
+
+**Goal**: Implement monitoring to validate non-functional requirements are met
+
+**Independent Test**: Generate content, verify performance metrics logged, set up alerts
+
+### Monitoring Services
+
+- [ ] T316 [P] [Monitor] Setup performance monitoring SDK (e.g., Vercel Analytics, Sentry)
+- [ ] T317 [P] [Monitor] Create custom metrics collection in `lib/monitoring/metrics.ts`
+- [ ] T318 [P] [Monitor] Implement AI generation time tracking with alerts for >3s text, >10s images
+- [ ] T319 [P] [Monitor] Create API response time monitoring with p95 tracking
+- [ ] T320 [P] [Monitor] Setup error tracking and alerting for critical failures
+
+### Dashboards
+
+- [ ] T321 [Monitor] Create performance dashboard showing NFR compliance
+- [ ] T322 [Monitor] Setup alerts for NFR violations (email/Slack)
+
+**Checkpoint**: ✅ Monitoring complete. Verify NFRs are tracked and alerts fire correctly.
+
+---
+
+## Phase 17: Polish & Cross-Cutting Concerns
+
+**Goal**: Final polish, documentation, and deployment preparation
+
+**Independent Test**: Full system test, verify all features work together, check documentation complete
+
+### Documentation
+
+- [ ] T323 [P] [Polish] Create API documentation from OpenAPI spec (Swagger UI)
+- [ ] T324 [P] [Polish] Write developer onboarding guide in `docs/DEVELOPER.md`
+- [ ] T325 [P] [Polish] Create deployment guide in `docs/DEPLOYMENT.md`
+- [ ] T326 [P] [Polish] Write troubleshooting guide in `docs/TROUBLESHOOTING.md`
+
+### UI Polish
+
+- [ ] T327 [P] [Polish] Implement loading skeletons for all async operations
+- [ ] T328 [P] [Polish] Add error boundaries with user-friendly error pages
+- [ ] T329 [P] [Polish] Create 404 and 500 error pages
+- [ ] T330 [P] [Polish] Implement toast notifications for user actions
+- [ ] T331 [P] [Polish] Add keyboard shortcuts for power users
+- [ ] T332 [P] [Polish] Implement responsive design testing and fixes for mobile
+
+### Deployment
+
+- [ ] T333 [Polish] Create production environment configuration
+- [ ] T334 [Polish] Setup Vercel deployment with environment variables
+- [ ] T335 [Polish] Configure custom domain and SSL
+- [ ] T336 [Polish] Create database backup and recovery procedures
+- [ ] T337 [Polish] Setup monitoring and logging for production
+
+### Final Integration
+
+- [ ] T338 [Polish] Perform full system integration test of all user stories
+- [ ] T339 [Polish] Load testing with simulated user traffic
+- [ ] T340 [Polish] Security audit and penetration testing
+- [ ] T341 [Polish] Accessibility audit (WCAG 2.1 compliance)
+- [ ] T342 [Polish] Final constitution compliance check
+
+**Checkpoint**: ✅ System complete and production-ready.
+
+---
+
+## Task Summary
+
+**Total Tasks**: 342 (vs. original 114)
+
+### Tasks by Category:
+
+- **Setup & Infrastructure**: 9 tasks (Phase 1)
+- **Foundational**: 33 tasks (Phase 2)
+- **User Story 1 (Onboarding - P1 MVP)**: 40 tasks (Phases 3 & 5)
+- **User Story 2 (AI Content - P1)**: 26 tasks (Phase 4)
+- **User Story 3 (Automation - P2)**: 8 tasks (Phase 6)
+- **User Story 4 (Images - P2)**: 19 tasks (Phase 7) ✨ NEW
+- **User Story 5 (Subscriptions - P2)**: 27 tasks (Phase 8) ✨ NEW
+- **User Story 6 (Analytics - P3)**: 23 tasks (Phase 9) ✨ NEW
+- **User Story 7 (Chat - P3)**: 20 tasks (Phase 10) ✨ NEW
+- **Calendar Interface**: 13 tasks (Phase 11) ✨ NEW
+- **Admin Features**: 19 tasks (Phase 12) ✨ NEW
+- **POPIA Compliance**: 23 tasks (Phase 13) ✨ NEW
+- **Testing**: 43 tasks (Phase 14) ✨ NEW
+- **Edge Cases**: 11 tasks (Phase 15) ✨ NEW
+- **Monitoring**: 7 tasks (Phase 16) ✨ NEW
+- **Polish**: 20 tasks (Phase 17)
+
+### Coverage Statistics:
+
+- ✅ All 7 User Stories have complete task coverage (100%)
+- ✅ All 23 Functional Requirements have task coverage (100%)
+- ✅ Constitution Article V compliance (comprehensive testing)
+- ✅ All edge cases from spec.md have implementations
+- ✅ POPIA compliance (non-negotiable) fully implemented
+- ✅ Performance monitoring for NFR validation
+
+### Parallel Execution Opportunities:
+
+- **Phase 1**: 6 of 9 tasks [P] (67%)
+- **Phase 2**: 28 of 33 tasks [P] (85%)
+- **Phase 3-17**: ~180 of 300 tasks [P] (60%)
+
+### MVP Scope Recommendation:
+
+**Minimum Viable Product** = Phases 1-6 (US1 + US2 + US3)
+
+- 116 tasks total for MVP
+- Delivers core value: Onboarding + AI Content Generation + Learning/Automation
+- Estimated timeline: 8-10 weeks with 2 developers
+
+### Full Feature Scope:
+
+**Complete Platform** = All 17 Phases (US1-US7 + Admin + Calendar + Compliance + Tests)
+
+- 342 tasks total
+- Estimated timeline: 16-20 weeks with 2-3 developers
+
+---
+
+## Dependency Graph
+
+```mermaid
+graph TD
+    P1[Phase 1: Setup] --> P2[Phase 2: Foundational]
+    P2 --> P3[Phase 3: US1 Part 1]
+    P2 --> P4[Phase 4: US2]
+    P2 --> P5[Phase 5: US1 Part 2]
+    P3 --> P5
+    P4 --> P6[Phase 6: US3]
+    P5 --> P6
+    P2 --> P7[Phase 7: US4]
+    P3 --> P7
+    P2 --> P8[Phase 8: US5]
+    P2 --> P9[Phase 9: US6]
+    P4 --> P9
+    P2 --> P10[Phase 10: US7]
+    P2 --> P11[Phase 11: Calendar]
+    P4 --> P11
+    P2 --> P12[Phase 12: Admin]
+    P2 --> P13[Phase 13: POPIA]
+    P3 --> P13
+
+    P3 --> P14[Phase 14: Testing]
+    P4 --> P14
+    P5 --> P14
+    P6 --> P14
+    P7 --> P14
+    P8 --> P14
+    P9 --> P14
+    P10 --> P14
+    P11 --> P14
+    P12 --> P14
+    P13 --> P14
+
+    P14 --> P15[Phase 15: Edge Cases]
+    P14 --> P16[Phase 16: Monitoring]
+
+    P15 --> P17[Phase 17: Polish]
+    P16 --> P17
+```
+
+### Critical Path:
+
+Phase 1 → Phase 2 → Phase 3 → Phase 5 → Phase 6 → Phase 14 → Phase 17
+
+### Parallelizable Branches (after Phase 2):
+
+- US4 (Images), US5 (Subscriptions), US7 (Chat), Calendar, Admin can start independently
+- US6 (Analytics) depends on US2 (content must be published first)
+- US3 (Automation) depends on US1 + US2 completion
+
+---
+
+## Implementation Strategy
+
+### Week 1-2: Foundation (Phases 1-2)
+
+- Setup project structure and dependencies
+- Create database schema and migrations
+- Implement authentication framework
+- **Blockers**: Must complete before ANY user story work
+
+### Week 3-6: MVP Core (Phases 3-6)
+
+- **Priority**: US1 → US2 → US3
+- Deliver: Onboarding + AI Content + Automation
+- **Milestone**: Working MVP for user testing
+
+### Week 7-10: Extended Features (Phases 7-10)
+
+- **Parallel work**: US4, US5, US7 can be developed simultaneously
+- US6 requires published content for testing
+- **Milestone**: Feature-complete platform
+
+### Week 11-12: Infrastructure (Phases 11-13)
+
+- Calendar, Admin, POPIA compliance
+- **Milestone**: Production-ready compliance
+
+### Week 13-15: Quality (Phases 14-16)
+
+- Comprehensive testing
+- Edge case handling
+- Performance monitoring
+- **Milestone**: Quality gates passed
+
+### Week 16: Launch (Phase 17)
+
+- Final polish and documentation
+- Deployment and go-live
+- **Milestone**: Public launch
+
+---
+
+## Next Steps
+
+1. **Review this task list** with the team
+2. **Prioritize phases** based on business goals (MVP-first recommended)
+3. **Assign tasks** to developers (use [P] markers for parallel work)
+4. **Create GitHub Issues** from task IDs (T001-T342)
+5. **Setup project board** with phases as columns
+6. **Begin Phase 1** - Foundation setup
+
+---
+
+**Generated**: October 8, 2025
+**Status**: ✅ Complete - Ready for implementation
+**Validation**: All user stories covered, Constitution compliant, tests included
+
 - [ ] T115 [P] [US3] Create AutomationToggle component in settings in `components/settings/automation-toggle.tsx`
 
 ### Background Jobs for US3
