@@ -5,6 +5,16 @@
 **Status**: Draft  
 **Input**: User description: "Purple Glow Social - AI Social Media Manager"
 
+## Clarifications
+
+### Session 2025-10-08
+
+- Q: Content Lifecycle States & Workflow - Which content lifecycle model should the system implement? → A: Confidence Score & Automation: A system to transition from manual to automatic approval. Phase 1 (Learning): All generated posts initially require manual user approval. The AI learns from any user edits to improve its output (recursive self-improvement). Phase 2 (Autonomous): As the AI's "Confidence Score" for the business increases (based on fewer edits over time), the user is prompted to enable full automation, where posts are scheduled and published without manual review. The user can toggle this setting at any time.
+- Q: AI Service Provider & Rate Limits - Which AI services will be used and how will rate limiting be handled? → A: Primary AI Provider: Google Gemini APIs. Specifically, Gemini for text generation and the gemini-2.5-flash-image-preview model (also known as Nano Banana) for all image generation and editing tasks.
+- Q: Subscription Tier Content Limits - What are the content generation limits per tier? → A: Starter: 10 posts/month, Growth: 50 posts/month, Enterprise: unlimited
+- Q: OAuth Token Expiration & Renewal - What should the system do when OAuth tokens expire or are revoked? → A: Immediately notify user via push notification and email, disable only affected platform, continue other platforms
+- Q: Performance & Response Time Expectations - What are the acceptable response time expectations for generating content? → A: Text generation: <3 seconds, Image generation: <10 seconds, show loading states for anything longer
+
 ## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - SMB Owner Onboarding and Business Profile Creation (Priority: P1)
@@ -124,7 +134,7 @@ As an SMB owner, I want to use natural language commands via a chat interface to
 
 ### Edge Cases
 
-- What happens when a user's social media platform revokes OAuth access? System must detect access issues, notify the user, and pause posting to affected platforms until access is restored.
+- What happens when a user's social media platform revokes OAuth access? System must immediately notify the user via push notification and email, disable posting only to the affected platform while continuing operations on other platforms, preserve scheduled posts for that platform, and provide clear re-authentication guidance.
 - How does system handle content generation for niche industries with limited reference data? System should request more specific information from users and adjust confidence scores accordingly.
 - What happens when a user exceeds their subscription tier's content limits? System should notify the user and provide clear upgrade options without service interruption.
 - How does system handle failed image generation? System must provide alternatives or default to text-only posts with appropriate notification to users.
@@ -136,18 +146,33 @@ As an SMB owner, I want to use natural language commands via a chat interface to
 
 - **FR-001**: System MUST provide user authentication via email/password and social OAuth (Google, Facebook) using Supabase Auth
 - **FR-002**: System MUST implement a three-tier subscription model (Starter, Growth, Enterprise) with different pricing and features
+- **FR-002a**: Starter tier MUST be limited to 10 posts per month
+- **FR-002b**: Growth tier MUST be limited to 50 posts per month
+- **FR-002c**: Enterprise tier MUST provide unlimited post generation
+- **FR-002d**: System MUST track post generation usage per user per billing cycle and enforce tier limits
+- **FR-002e**: System MUST notify users when they approach (80%) and reach (100%) their tier limits
 - **FR-003**: System MUST offer a 14-day free trial of the Growth tier with automatic billing via Paystack after the trial period
 - **FR-004**: System MUST include a comprehensive onboarding wizard to collect business information
 - **FR-005**: System MUST securely store business profile data including business details, target audience, services, and brand identity
 - **FR-006**: System MUST support content tone and language selection across all 11 official South African languages
 - **FR-007**: System MUST enable users to connect multiple social media accounts (Facebook, Instagram, Twitter/X, LinkedIn) via OAuth
 - **FR-008**: System MUST securely store social media access tokens
+- **FR-008a**: System MUST detect when OAuth tokens expire or are revoked by social media platforms
+- **FR-008b**: System MUST immediately notify users via both push notification and email when token issues are detected
+- **FR-008c**: System MUST disable posting only to the affected platform while continuing to operate normally for other connected platforms
+- **FR-008d**: System MUST provide clear in-app guidance for users to re-authenticate the affected platform
+- **FR-008e**: System MUST preserve scheduled posts for the affected platform and resume posting once re-authentication is complete
 - **FR-009**: System MUST provide a visual calendar interface for managing content
-- **FR-010**: System MUST generate AI content based on the user's business profile and subscription tier
-- **FR-011**: System MUST implement a confidence scoring system to learn from user edits and improve content over time
+- **FR-010**: System MUST generate AI content based on the user's business profile and subscription tier using Google Gemini APIs
+- **FR-011**: System MUST implement a confidence scoring system to learn from user edits and improve content over time through recursive self-improvement
+- **FR-011a**: System MUST track edit frequency and magnitude per business profile to calculate Confidence Score
+- **FR-011b**: System MUST operate in Phase 1 (Learning Mode) by default, requiring manual approval for all generated posts
 - **FR-012**: System MUST support transition from manual to automatic content approval based on confidence score
-- **FR-013**: System MUST generate branded images for social media posts using AI image generation
-- **FR-014**: System MUST incorporate user's brand elements (logo, colors) into generated images
+- **FR-012a**: System MUST prompt users to enable Phase 2 (Autonomous Mode) when Confidence Score reaches the defined threshold
+- **FR-012b**: System MUST allow users to toggle between Phase 1 (manual approval) and Phase 2 (automatic posting) at any time
+- **FR-012c**: System MUST automatically schedule and publish posts without manual review when Phase 2 is enabled
+- **FR-013**: System MUST generate branded images for social media posts using Google Gemini's gemini-2.5-flash-image-preview model (Nano Banana)
+- **FR-014**: System MUST incorporate user's brand elements (logo, colors) into generated images using Gemini image generation capabilities
 - **FR-015**: System MUST provide a natural language chat interface for issuing commands
 - **FR-016**: System MUST display basic engagement metrics (likes, comments, shares) from connected platforms
 - **FR-017**: System MUST allow users to manage their subscription (upgrade/downgrade/cancel) and update billing information
@@ -160,11 +185,34 @@ As an SMB owner, I want to use natural language commands via a chat interface to
 ### Key Entities _(include if feature involves data)_
 
 - **User**: Represents an SMB owner with authentication details, subscription status, and personal information
-- **Business Profile**: Contains all business-related information including name, industry, description, target audience, services, service areas, and brand identity
+- **Business Profile**: Contains all business-related information including name, industry, description, target audience, services, service areas, and brand identity. Includes a Confidence Score that tracks AI learning progress based on user edit patterns.
 - **Social Media Account**: Represents a connected social platform with account details, access tokens, and platform-specific settings
-- **Content**: Represents a social media post with text, images, scheduling information, approval status, and performance metrics
-- **Subscription**: Represents a user's chosen service tier with features, limits, pricing, and billing information
+- **Content**: Represents a social media post with text, images, scheduling information, approval status, and performance metrics. Content lifecycle states: Generated → (Manual Approval in Phase 1) → Scheduled → Published → Completed. In Phase 2 (autonomous mode), the flow becomes: Generated → Auto-Scheduled → Published → Completed (bypassing manual approval when Confidence Score threshold is met).
+- **Subscription**: Represents a user's chosen service tier with features, limits, pricing, and billing information. Tiers: Starter (10 posts/month), Growth (50 posts/month), Enterprise (unlimited posts). Includes usage tracking for current billing cycle.
 - **Brand Assets**: Stores visual elements including logos, color schemes, and other brand identity components
+
+### Technical Constraints
+
+- **TC-001**: AI text generation MUST use Google Gemini APIs
+- **TC-002**: AI image generation and editing MUST use Google Gemini gemini-2.5-flash-image-preview model (Nano Banana)
+- **TC-003**: System MUST implement appropriate rate limiting and error handling for Google Gemini API calls
+- **TC-004**: System MUST handle Google Gemini API quota limits gracefully with user-facing notifications when limits are approached or exceeded
+
+### Non-Functional Requirements
+
+#### Performance
+
+- **NFR-001**: Text content generation MUST complete within 3 seconds under normal operating conditions
+- **NFR-002**: Image generation MUST complete within 10 seconds under normal operating conditions
+- **NFR-003**: System MUST display loading states with progress indicators for any operation exceeding expected completion time
+- **NFR-004**: System MUST provide user feedback (loading spinner, progress bar, or status message) for all AI generation operations
+- **NFR-005**: Dashboard page load time MUST be under 2 seconds on standard broadband connections
+
+#### Reliability
+
+- **NFR-006**: System MUST maintain 99.5% successful post publishing rate across all connected platforms
+- **NFR-007**: System MUST implement retry logic with exponential backoff for failed API calls to external services
+- **NFR-008**: System MUST queue failed posts for retry and notify users of persistent failures after 3 retry attempts
 
 ## Success Criteria _(mandatory)_
 
