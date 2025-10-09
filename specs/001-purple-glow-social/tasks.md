@@ -108,38 +108,38 @@ description: "Task list for Purple Glow Social implementation"
 
 ### Models & Services for US1
 
-- [ ] T043 [P] [US1] Implement business profile service in `lib/services/business-profile.ts` with create/update operations
-- [ ] T044 [P] [US1] Implement brand assets upload service with Supabase Storage integration in `lib/services/brand-assets.ts`
+- [x] T043 [P] [US1] Implement business profile service in `lib/services/business-profile.ts` with create/update operations
+- [x] T044 [P] [US1] Implement brand assets upload service with Supabase Storage integration in `lib/services/brand-assets.ts`
 
 ### API Endpoints for US1
 
-- [ ] T045 [P] [US1] Create POST /api/auth/signup endpoint in `app/api/auth/signup/route.ts`
-- [ ] T046 [P] [US1] Create POST /api/auth/login endpoint in `app/api/auth/login/route.ts`
-- [ ] T047 [P] [US1] Create POST /api/business-profiles endpoint in `app/api/business-profiles/route.ts`
-- [ ] T048 [P] [US1] Create PATCH /api/business-profiles endpoint in same file
-- [ ] T049 [P] [US1] Create POST /api/brand-assets endpoint with file upload handling in `app/api/brand-assets/route.ts`
-- [ ] T050 [P] [US1] Create DELETE /api/brand-assets/[assetId] endpoint in `app/api/brand-assets/[assetId]/route.ts`
+- [x] T045 [P] [US1] Create POST /api/auth/signup endpoint in `app/api/auth/signup/route.ts`
+- [x] T046 [P] [US1] Create POST /api/auth/login endpoint in `app/api/auth/login/route.ts`
+- [x] T047 [P] [US1] Create POST /api/business-profiles endpoint in `app/api/business-profiles/route.ts`
+- [x] T048 [P] [US1] Create PATCH /api/business-profiles endpoint in same file
+- [x] T049 [P] [US1] Create POST /api/brand-assets endpoint with file upload handling in `app/api/brand-assets/route.ts`
+- [x] T050 [P] [US1] Create DELETE /api/brand-assets/[assetId] endpoint in `app/api/brand-assets/[assetId]/route.ts`
 
 ### UI Components for US1
 
-- [ ] T051 [P] [US1] Create signup page in `app/(auth)/signup/page.tsx`
-- [ ] T052 [P] [US1] Create login page in `app/(auth)/login/page.tsx`
-- [ ] T053 [P] [US1] Create OAuth callback handler in `app/(auth)/oauth-callback/page.tsx`
-- [ ] T054 [US1] Create onboarding wizard layout in `app/(dashboard)/onboarding/layout.tsx`
-- [ ] T055 [US1] Create Step 1: Welcome screen in `app/(dashboard)/onboarding/page.tsx`
-- [ ] T056 [US1] Create Step 2: Business information form in `app/(dashboard)/onboarding/business-info/page.tsx`
-- [ ] T057 [US1] Create Step 3: Brand identity upload screen in `app/(dashboard)/onboarding/brand-identity/page.tsx`
-- [ ] T058 [US1] Create Step 4: Social media connection screen (stub for US1) in `app/(dashboard)/onboarding/social-connect/page.tsx`
-- [ ] T059 [P] [US1] Create reusable form components: BusinessInfoForm in `components/onboarding/business-info-form.tsx`
-- [ ] T060 [P] [US1] Create reusable FileUpload component with drag-drop in `components/ui/file-upload.tsx`
-- [ ] T061 [P] [US1] Create progress stepper component for onboarding in `components/onboarding/progress-stepper.tsx`
+- [x] T051 [P] [US1] Create signup page in `app/(auth)/signup/page.tsx`
+- [x] T052 [P] [US1] Create login page in `app/(auth)/login/page.tsx`
+- [x] T053 [P] [US1] Create OAuth callback handler in `app/(auth)/oauth-callback/page.tsx`
+- [x] T054 [US1] Create onboarding wizard layout in `app/(dashboard)/onboarding/layout.tsx`
+- [x] T055 [US1] Create Step 1: Welcome screen in `app/(dashboard)/onboarding/page.tsx`
+- [x] T056 [US1] Create Step 2: Business information form in `app/(dashboard)/onboarding/business-info/page.tsx`
+- [x] T057 [US1] Create Step 3: Brand identity upload screen in `app/(dashboard)/onboarding/brand-identity/page.tsx`
+- [x] T058 [US1] Create Step 4: Social media connection screen (stub for US1) in `app/(dashboard)/onboarding/social-connect/page.tsx`
+- [x] T059 [P] [US1] Create reusable form components: BusinessInfoForm in `components/onboarding/business-info-form.tsx`
+- [x] T060 [P] [US1] Create reusable FileUpload component with drag-drop in `components/ui/file-upload.tsx`
+- [x] T061 [P] [US1] Create progress stepper component for onboarding in `components/onboarding/progress-stepper.tsx`
 
 ### Integration for US1
 
-- [ ] T062 [US1] Wire up onboarding flow: signup → business profile → brand upload → redirect to dashboard
-- [ ] T063 [US1] Add validation and error handling throughout onboarding flow
-- [ ] T064 [US1] Add loading states and progress indicators for all async operations
-- [ ] T065 [US1] Implement form persistence (save draft if user leaves)
+- [x] T062 [US1] Wire up onboarding flow: signup → business profile → brand upload → redirect to dashboard
+- [x] T063 [US1] Add validation and error handling throughout onboarding flow
+- [x] T064 [US1] Add loading states and progress indicators for all async operations
+- [x] T065 [US1] Implement form persistence (save draft if user leaves)
 
 **Checkpoint**: ✅ User Story 1 complete - users can onboard and create business profile. Verify with manual test of full flow.
 
