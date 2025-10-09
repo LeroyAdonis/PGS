@@ -1,0 +1,1635 @@
+openapi: 3.1.0
+info:
+  title: Purple Glow Social API
+  description: |
+    AI-powered social media management platform for South African SMBs.
+
+    ## Authentication
+    All endpoints require authentication via Supabase Auth JWT token.
+    Include the token in the Authorization header: `Bearer <token>`
+
+    ## Rate Limiting
+    API endpoints are rate-limited per user based on subscription tier:
+    - Starter: 100 requests/hour
+    - Growth: 500 requests/hour
+    - Enterprise: 2000 requests/hour
+
+    ## Error Responses
+    All errors follow the standard format:
+    ```json
+    {
+      "error": {
+        "code": "ERROR_CODE",
+        "message": "Human readable error message",
+        "details": {}
+      }
+    }
+    ```
+  version: 1.0.0
+  contact:
+    name: Purple Glow Social Support
+    email: support@purpleglowsocial.co.za
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://api.purpleglowsocial.co.za/v1
+    description: Production server
+  - url: http://localhost:3000/api
+    description: Local development
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Authentication
+    description: User authentication and session management
+  - name: Business Profiles
+    description: Business information and brand identity
+  - name: Content
+    description: AI content generation and management
+  - name: Social Accounts
+    description: Social media platform connections
+  - name: Analytics
+    description: Engagement metrics and insights
+  - name: Subscriptions
+    description: Billing and subscription management
+  - name: Settings
+    description: User preferences and configuration
+  - name: Admin
+    description: Administrative endpoints (admin role required)
+
+paths:
+  # Authentication Endpoints
+  /auth/signup:
+    post:
+      tags: [Authentication]
+      summary: Create a new user account
+      operationId: signUp
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpRequest"
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Authenticate user
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: End user session
+      operationId: logout
+      responses:
+        "204":
+          description: Logout successful
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # Business Profile Endpoints
+  /business-profiles:
+    get:
+      tags: [Business Profiles]
+      summary: Get current user's business profile
+      operationId: getBusinessProfile
+      responses:
+        "200":
+          description: Business profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessProfile"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    post:
+      tags: [Business Profiles]
+      summary: Create business profile (onboarding)
+      operationId: createBusinessProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBusinessProfileRequest"
+      responses:
+        "201":
+          description: Business profile created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessProfile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+    patch:
+      tags: [Business Profiles]
+      summary: Update business profile
+      operationId: updateBusinessProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBusinessProfileRequest"
+      responses:
+        "200":
+          description: Business profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessProfile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /business-profiles/confidence-score:
+    get:
+      tags: [Business Profiles]
+      summary: Get AI confidence score and automation status
+      operationId: getConfidenceScore
+      responses:
+        "200":
+          description: Confidence score retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfidenceScore"
+
+  /business-profiles/automation:
+    put:
+      tags: [Business Profiles]
+      summary: Enable or disable automatic posting
+      operationId: updateAutomationSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enabled]
+              properties:
+                enabled:
+                  type: boolean
+                  description: Enable or disable Phase 2 autonomous posting
+      responses:
+        "200":
+          description: Automation settings updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessProfile"
+
+  # Brand Assets Endpoints
+  /brand-assets:
+    get:
+      tags: [Business Profiles]
+      summary: List all brand assets
+      operationId: listBrandAssets
+      parameters:
+        - name: asset_type
+          in: query
+          schema:
+            type: string
+            enum: [logo, banner, pattern, other]
+      responses:
+        "200":
+          description: Brand assets retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/BrandAsset"
+
+    post:
+      tags: [Business Profiles]
+      summary: Upload brand asset
+      operationId: uploadBrandAsset
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, asset_type]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                asset_type:
+                  type: string
+                  enum: [logo, banner, pattern, other]
+                is_primary:
+                  type: boolean
+      responses:
+        "201":
+          description: Brand asset uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BrandAsset"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "413":
+          description: File too large (max 10MB)
+
+  /brand-assets/{assetId}:
+    delete:
+      tags: [Business Profiles]
+      summary: Delete brand asset
+      operationId: deleteBrandAsset
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Brand asset deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # Social Accounts Endpoints
+  /social-accounts:
+    get:
+      tags: [Social Accounts]
+      summary: List connected social accounts
+      operationId: listSocialAccounts
+      responses:
+        "200":
+          description: Social accounts retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SocialAccount"
+
+    post:
+      tags: [Social Accounts]
+      summary: Connect social account via OAuth
+      operationId: connectSocialAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [platform, oauth_code]
+              properties:
+                platform:
+                  type: string
+                  enum: [facebook, instagram, twitter, linkedin]
+                oauth_code:
+                  type: string
+                  description: OAuth authorization code from callback
+      responses:
+        "201":
+          description: Social account connected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SocialAccount"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /social-accounts/{accountId}:
+    delete:
+      tags: [Social Accounts]
+      summary: Disconnect social account
+      operationId: disconnectSocialAccount
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Social account disconnected
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /social-accounts/{accountId}/refresh-token:
+    post:
+      tags: [Social Accounts]
+      summary: Manually refresh OAuth token
+      operationId: refreshSocialToken
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SocialAccount"
+        "401":
+          description: Token refresh failed
+
+  # Content (Posts) Endpoints
+  /posts:
+    get:
+      tags: [Content]
+      summary: List posts with filtering
+      operationId: listPosts
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              [
+                draft,
+                pending_approval,
+                approved,
+                scheduled,
+                published,
+                failed,
+                archived,
+              ]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: Posts retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Post"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+
+    post:
+      tags: [Content]
+      summary: Generate AI content
+      operationId: generateContent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateContentRequest"
+      responses:
+        "201":
+          description: Content generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Post"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "402":
+          description: Subscription limit reached
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /posts/{postId}:
+    get:
+      tags: [Content]
+      summary: Get post details
+      operationId: getPost
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Post retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    patch:
+      tags: [Content]
+      summary: Update post content
+      operationId: updatePost
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePostRequest"
+      responses:
+        "200":
+          description: Post updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+    delete:
+      tags: [Content]
+      summary: Delete post
+      operationId: deletePost
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Post deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /posts/{postId}/approve:
+    post:
+      tags: [Content]
+      summary: Approve post for scheduling
+      operationId: approvePost
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scheduled_for, target_platforms]
+              properties:
+                scheduled_for:
+                  type: string
+                  format: date-time
+                  description: When to publish the post
+                target_platforms:
+                  type: array
+                  items:
+                    type: string
+                    enum: [facebook, instagram, twitter, linkedin]
+                  minItems: 1
+      responses:
+        "200":
+          description: Post approved and scheduled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+
+  /posts/{postId}/images:
+    post:
+      tags: [Content]
+      summary: Generate or upload image for post
+      operationId: addPostImage
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Upload existing image
+                generate:
+                  type: boolean
+                  description: Generate image with AI
+                prompt:
+                  type: string
+                  description: Image generation prompt (if generate=true)
+      responses:
+        "201":
+          description: Image added to post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostImage"
+
+  /posts/calendar:
+    get:
+      tags: [Content]
+      summary: Get content calendar view
+      operationId: getContentCalendar
+      parameters:
+        - name: start_date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Calendar data retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CalendarEntry"
+
+  # Analytics Endpoints
+  /analytics/overview:
+    get:
+      tags: [Analytics]
+      summary: Get analytics overview
+      operationId: getAnalyticsOverview
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: platform
+          in: query
+          schema:
+            type: string
+            enum: [facebook, instagram, twitter, linkedin, all]
+      responses:
+        "200":
+          description: Analytics overview retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsOverview"
+
+  /analytics/posts/{postId}:
+    get:
+      tags: [Analytics]
+      summary: Get analytics for specific post
+      operationId: getPostAnalytics
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Post analytics retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AnalyticsData"
+
+  /analytics/sync:
+    post:
+      tags: [Analytics]
+      summary: Manually trigger analytics sync
+      operationId: syncAnalytics
+      responses:
+        "202":
+          description: Sync initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  job_id:
+                    type: string
+
+  # Subscription Endpoints
+  /subscriptions:
+    get:
+      tags: [Subscriptions]
+      summary: Get current subscription
+      operationId: getSubscription
+      responses:
+        "200":
+          description: Subscription retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+  /subscriptions/upgrade:
+    post:
+      tags: [Subscriptions]
+      summary: Upgrade subscription tier
+      operationId: upgradeSubscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tier]
+              properties:
+                tier:
+                  type: string
+                  enum: [starter, growth, enterprise]
+      responses:
+        "200":
+          description: Upgrade initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subscription:
+                    $ref: "#/components/schemas/Subscription"
+                  paystack_authorization_url:
+                    type: string
+                    description: URL to complete payment
+
+  /subscriptions/cancel:
+    post:
+      tags: [Subscriptions]
+      summary: Cancel subscription
+      operationId: cancelSubscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: Cancellation reason
+                cancel_immediately:
+                  type: boolean
+                  default: false
+                  description: Cancel immediately or at end of period
+      responses:
+        "200":
+          description: Subscription canceled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+  /subscriptions/usage:
+    get:
+      tags: [Subscriptions]
+      summary: Get usage statistics for current billing cycle
+      operationId: getSubscriptionUsage
+      responses:
+        "200":
+          description: Usage retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionUsage"
+
+  # Settings Endpoints
+  /settings/preferences:
+    get:
+      tags: [Settings]
+      summary: Get user preferences
+      operationId: getUserPreferences
+      responses:
+        "200":
+          description: Preferences retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPreferences"
+
+    patch:
+      tags: [Settings]
+      summary: Update user preferences
+      operationId: updateUserPreferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserPreferencesRequest"
+      responses:
+        "200":
+          description: Preferences updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPreferences"
+
+  # Admin Endpoints
+  /admin/lead-insights:
+    get:
+      tags: [Admin]
+      summary: List lead insights (admin only)
+      operationId: listLeadInsights
+      security:
+        - BearerAuth: [admin]
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [new, contacted, qualified, converted, not_interested]
+        - name: min_score
+          in: query
+          schema:
+            type: number
+            format: float
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: Lead insights retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/LeadInsight"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+    post:
+      tags: [Admin]
+      summary: Create lead insight manually
+      operationId: createLeadInsight
+      security:
+        - BearerAuth: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLeadInsightRequest"
+      responses:
+        "201":
+          description: Lead insight created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeadInsight"
+
+  /admin/platform-analytics:
+    get:
+      tags: [Admin]
+      summary: Get platform-wide analytics
+      operationId: getPlatformAnalytics
+      security:
+        - BearerAuth: [admin]
+      responses:
+        "200":
+          description: Platform analytics retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformAnalytics"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Supabase Auth JWT token
+
+  schemas:
+    # Auth Schemas
+    SignUpRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 72
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        session:
+          type: object
+          properties:
+            access_token:
+              type: string
+            refresh_token:
+              type: string
+            expires_in:
+              type: integer
+            expires_at:
+              type: integer
+
+    # User Schemas
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [user, admin]
+        created_at:
+          type: string
+          format: date-time
+        last_sign_in_at:
+          type: string
+          format: date-time
+
+    # Business Profile Schemas
+    BusinessProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        business_name:
+          type: string
+        industry:
+          type: string
+        description:
+          type: string
+        target_audience:
+          type: string
+        target_demographics:
+          type: array
+          items:
+            type: string
+        services:
+          type: array
+          items:
+            type: string
+        service_areas:
+          type: array
+          items:
+            type: string
+        preferred_languages:
+          type: array
+          items:
+            type: string
+            enum:
+              [
+                Afrikaans,
+                English,
+                isiNdebele,
+                isiXhosa,
+                isiZulu,
+                Sesotho,
+                Setswana,
+                Sepedi,
+                siSwati,
+                Tshivenda,
+                Xitsonga,
+              ]
+        content_tone:
+          type: string
+          enum: [professional, friendly, humorous, inspirational]
+        brand_colors:
+          type: array
+          items:
+            type: string
+            pattern: "^#[0-9A-Fa-f]{6}$"
+        brand_keywords:
+          type: array
+          items:
+            type: string
+        confidence_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+        automation_enabled:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateBusinessProfileRequest:
+      type: object
+      required:
+        [
+          business_name,
+          industry,
+          description,
+          target_audience,
+          services,
+          preferred_languages,
+        ]
+      properties:
+        business_name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        industry:
+          type: string
+          minLength: 2
+          maxLength: 50
+        description:
+          type: string
+          minLength: 50
+          maxLength: 500
+        target_audience:
+          type: string
+          minLength: 20
+          maxLength: 300
+        target_demographics:
+          type: array
+          items:
+            type: string
+        services:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 20
+        service_areas:
+          type: array
+          items:
+            type: string
+        preferred_languages:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        content_tone:
+          type: string
+          enum: [professional, friendly, humorous, inspirational]
+          default: professional
+        brand_colors:
+          type: array
+          items:
+            type: string
+            pattern: "^#[0-9A-Fa-f]{6}$"
+        brand_keywords:
+          type: array
+          items:
+            type: string
+
+    UpdateBusinessProfileRequest:
+      type: object
+      properties:
+        business_name:
+          type: string
+        industry:
+          type: string
+        description:
+          type: string
+        target_audience:
+          type: string
+        services:
+          type: array
+          items:
+            type: string
+        preferred_languages:
+          type: array
+          items:
+            type: string
+        content_tone:
+          type: string
+          enum: [professional, friendly, humorous, inspirational]
+        brand_colors:
+          type: array
+          items:
+            type: string
+        brand_keywords:
+          type: array
+          items:
+            type: string
+
+    ConfidenceScore:
+      type: object
+      properties:
+        confidence_score:
+          type: number
+          format: float
+        total_posts_generated:
+          type: integer
+        posts_approved_no_edit:
+          type: integer
+        posts_with_minor_edits:
+          type: integer
+        posts_with_major_edits:
+          type: integer
+        posts_rejected:
+          type: integer
+        automation_threshold:
+          type: number
+          format: float
+          default: 80.0
+        automation_suggested:
+          type: boolean
+        automation_enabled:
+          type: boolean
+
+    # Brand Asset Schemas
+    BrandAsset:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        business_profile_id:
+          type: string
+          format: uuid
+        asset_type:
+          type: string
+          enum: [logo, banner, pattern, other]
+        storage_path:
+          type: string
+        public_url:
+          type: string
+          format: uri
+        file_name:
+          type: string
+        file_size:
+          type: integer
+          description: Size in bytes
+        mime_type:
+          type: string
+        is_primary:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    # Social Account Schemas
+    SocialAccount:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        platform:
+          type: string
+          enum: [facebook, instagram, twitter, linkedin]
+        platform_username:
+          type: string
+        is_active:
+          type: boolean
+        last_sync_at:
+          type: string
+          format: date-time
+        token_expires_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    # Post Schemas
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        content_text:
+          type: string
+        content_language:
+          type: string
+        status:
+          type: string
+          enum:
+            [
+              draft,
+              pending_approval,
+              approved,
+              scheduled,
+              published,
+              failed,
+              archived,
+            ]
+        scheduled_for:
+          type: string
+          format: date-time
+        published_at:
+          type: string
+          format: date-time
+        target_platforms:
+          type: array
+          items:
+            type: string
+            enum: [facebook, instagram, twitter, linkedin]
+        published_to:
+          type: object
+          additionalProperties: true
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostImage"
+        edit_count:
+          type: integer
+        original_text:
+          type: string
+        failure_reason:
+          type: string
+        retry_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    GenerateContentRequest:
+      type: object
+      required: [count]
+      properties:
+        count:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: Number of posts to generate
+        topic:
+          type: string
+          description: Optional topic or theme
+        include_images:
+          type: boolean
+          default: true
+        language:
+          type: string
+          description: Override default language
+
+    UpdatePostRequest:
+      type: object
+      properties:
+        content_text:
+          type: string
+        target_platforms:
+          type: array
+          items:
+            type: string
+
+    PostImage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        post_id:
+          type: string
+          format: uuid
+        storage_path:
+          type: string
+        public_url:
+          type: string
+          format: uri
+        width:
+          type: integer
+        height:
+          type: integer
+        file_size:
+          type: integer
+        generated_by:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    CalendarEntry:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        posts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Post"
+
+    # Analytics Schemas
+    AnalyticsData:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        post_id:
+          type: string
+          format: uuid
+        platform:
+          type: string
+          enum: [facebook, instagram, twitter, linkedin]
+        likes_count:
+          type: integer
+        comments_count:
+          type: integer
+        shares_count:
+          type: integer
+        impressions_count:
+          type: integer
+        reach_count:
+          type: integer
+        clicks_count:
+          type: integer
+        engagement_rate:
+          type: number
+          format: float
+        synced_at:
+          type: string
+          format: date-time
+
+    AnalyticsOverview:
+      type: object
+      properties:
+        total_posts:
+          type: integer
+        total_engagement:
+          type: integer
+        average_engagement_rate:
+          type: number
+          format: float
+        top_performing_posts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Post"
+        platform_breakdown:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              posts_count:
+                type: integer
+              total_engagement:
+                type: integer
+              avg_engagement_rate:
+                type: number
+
+    # Subscription Schemas
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tier:
+          type: string
+          enum: [trial, starter, growth, enterprise]
+        status:
+          type: string
+          enum: [active, past_due, canceled, paused]
+        amount_zar:
+          type: number
+          format: float
+        monthly_post_limit:
+          type: integer
+        posts_used_this_cycle:
+          type: integer
+        current_period_start:
+          type: string
+          format: date-time
+        current_period_end:
+          type: string
+          format: date-time
+        trial_ends_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    SubscriptionUsage:
+      type: object
+      properties:
+        tier:
+          type: string
+        monthly_limit:
+          type: integer
+        used:
+          type: integer
+        remaining:
+          type: integer
+        percentage_used:
+          type: number
+          format: float
+        period_ends_at:
+          type: string
+          format: date-time
+
+    # Settings Schemas
+    UserPreferences:
+      type: object
+      properties:
+        notifications_enabled:
+          type: boolean
+        email_notifications:
+          type: boolean
+        push_notifications:
+          type: boolean
+        timezone:
+          type: string
+        language:
+          type: string
+
+    UpdateUserPreferencesRequest:
+      type: object
+      properties:
+        notifications_enabled:
+          type: boolean
+        email_notifications:
+          type: boolean
+        push_notifications:
+          type: boolean
+        timezone:
+          type: string
+
+    # Admin Schemas
+    LeadInsight:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        business_name:
+          type: string
+        industry:
+          type: string
+        social_platform:
+          type: string
+        social_handle:
+          type: string
+        follower_count:
+          type: integer
+        post_frequency:
+          type: string
+        engagement_quality:
+          type: string
+        opportunity_score:
+          type: number
+          format: float
+        recommended_tier:
+          type: string
+        contact_status:
+          type: string
+        notes:
+          type: string
+        scraped_at:
+          type: string
+          format: date-time
+
+    CreateLeadInsightRequest:
+      type: object
+      required: [business_name, social_platform, social_handle]
+      properties:
+        business_name:
+          type: string
+        industry:
+          type: string
+        social_platform:
+          type: string
+        social_handle:
+          type: string
+        follower_count:
+          type: integer
+        notes:
+          type: string
+
+    PlatformAnalytics:
+      type: object
+      properties:
+        total_users:
+          type: integer
+        active_subscriptions:
+          type: integer
+        subscription_breakdown:
+          type: object
+        total_posts_generated:
+          type: integer
+        total_revenue_zar:
+          type: number
+        churn_rate:
+          type: number
+
+    # Common Schemas
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties: true
+
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+        has_more:
+          type: boolean
+
+  responses:
+    BadRequest:
+      description: Bad request - validation error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: VALIDATION_ERROR
+              message: Invalid request parameters
+              details:
+                field: email
+                reason: Invalid email format
+
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: UNAUTHORIZED
+              message: Authentication required
+
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: FORBIDDEN
+              message: Insufficient permissions
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: NOT_FOUND
+              message: Resource not found
+
+    Conflict:
+      description: Conflict - resource already exists
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: CONFLICT
+              message: Resource already exists
+
+    TooManyRequests:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: RATE_LIMIT_EXCEEDED
+              message: Rate limit exceeded, please try again later
+              details:
+                retry_after: 60
